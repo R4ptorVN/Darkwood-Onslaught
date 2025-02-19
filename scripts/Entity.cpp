@@ -1,3 +1,46 @@
-//
-// Created by PVNA on 2/19/2025.
-//
+#include <SDL.h>
+#include <SDL_image.h>
+#include<iostream>
+
+using namespace std;
+
+#include "Entity.hpp"
+
+Entity::Entity(int srcX, int srcY, int srcW, int srcH, float p_x, float p_y, SDL_Texture* p_tex)
+:x(p_x), y(p_y), tex(p_tex)
+{
+    currentFrame.x = srcX;
+    currentFrame.y = srcY;
+    currentFrame.w = srcW;
+    currentFrame.h = srcH;
+}
+
+float Entity::getX()
+{
+    return x;
+}
+
+void Entity::setX(int val)
+{
+    x = val;
+}
+
+float Entity::getY()
+{
+    return y;
+}
+
+void Entity::setY(int val)
+{
+    y = val;
+}
+
+SDL_Texture* Entity::getTex()
+{
+    return tex;
+}
+
+SDL_Rect Entity::getCurrentFrame()
+{
+    return currentFrame;
+}
