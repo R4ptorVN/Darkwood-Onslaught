@@ -1,1 +1,1 @@
-Game inspired Vampire Survivors and HoloCure
+**Game inspired Vampire Survivors and HoloCure**
