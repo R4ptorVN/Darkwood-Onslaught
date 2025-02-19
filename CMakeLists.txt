@@ -5,7 +5,8 @@ set(CMAKE_CXX_STANDARD 14)
 
 # Must set the path to the main.cpp, for example: scripts/main.cpp if it is inside a folder
 add_executable(${PROJECT_NAME} scripts/main.cpp
-        scripts/RenderWindow.cpp)
+        scripts/RenderWindow.cpp
+        scripts/RenderWindow.hpp)
 
 # --- SDL2 SETUP ---
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)

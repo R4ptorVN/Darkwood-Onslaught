@@ -4,7 +4,7 @@
 
 using namespace std;
 
-#include <RenderWindow.hpp>
+#include "RenderWindow.hpp"
 
 RenderWindow::RenderWindow(const char* p_title, int p_w, int p_h) :window(NULL), renderer(NULL)
 {
