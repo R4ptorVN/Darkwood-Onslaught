@@ -4,7 +4,7 @@ cmake-build-debug/*
 # cmake/
 .idea/
 
-
+SDL2/
 
 ## CMake
 CMakeLists.txt.user
