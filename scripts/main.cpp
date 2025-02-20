@@ -20,23 +20,25 @@ int main(int argc, char* args [])
     SDL_Texture* grassTexture = window.loadTexture("resources/grass.png");
     SDL_Texture* girlWalk = window.loadTexture("resources/GirlWalk.png");
     SDL_Texture* girlIdle = window.loadTexture("resources/GirlIdle.png");
+    SDL_Texture* rockTexture = window.loadTexture("resources/Rock.png");
 
-    int movementSpeed = 6;
-    const int frameDistance = 129;
+    int movementSpeed = 5;
+    const int frameDistance = 128;
 
-    Entity background(0, 0, 1280, 720, 0, 0, grassTexture, SDL_FLIP_NONE);
+    Entity background(0, 0, 1280, 720, 0, 0, 1, 1, grassTexture, SDL_FLIP_NONE);
+    Entity rock(0, 0, 32, 32, 300, 300, 3, 3, rockTexture, SDL_FLIP_NONE);
 
     vector<Entity> walkingFrames;
     vector<Entity> idleFrames;
 
-    int srcX = 0, srcY = 0;
+    int srcX = 42, srcY = 55;
     for (int i = 0; i < 12; i++)
     {
-         Entity walking(srcX, srcY, 129, 130, 550, 250, girlWalk, SDL_FLIP_NONE);
+         Entity walking(srcX, srcY, 41, 75, 550, 250, 1, 1, girlWalk, SDL_FLIP_NONE);
          walkingFrames.push_back(walking);
          srcX += frameDistance;
     }
-    Entity idle(0, 0, 129, 130, 550, 250, girlIdle, SDL_FLIP_NONE);
+    Entity idle(42, 55, 41, 75, 550, 250, 1, 1, girlIdle, SDL_FLIP_NONE);
     Entity character = idle;
 
     if (grassTexture == NULL)
@@ -113,9 +115,9 @@ int main(int argc, char* args [])
                     character.setY(curY);
                 }
                 if (movingDirections > 1)
-                    movementSpeed = 3;
+                    movementSpeed = 2.5;
                 else
-                    movementSpeed = 6;
+                    movementSpeed = 5;
                 if (movingLeft)
                     character.setX(character.getX() - movementSpeed);
                 if (movingUp)
@@ -180,6 +182,7 @@ int main(int argc, char* args [])
         }
         window.clear();
         window.render(background);
+        window.render(rock);
         window.render(character);
         window.display();
 
