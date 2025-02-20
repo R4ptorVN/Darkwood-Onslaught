@@ -8,7 +8,9 @@ add_executable(${PROJECT_NAME} scripts/main.cpp
         scripts/RenderWindow.cpp
         scripts/RenderWindow.hpp
         scripts/Entity.hpp
-        scripts/Entity.cpp)
+        scripts/Entity.cpp
+        scripts/Player.cpp
+        scripts/Player.hpp)
 
 # --- SDL2 SETUP ---
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)

@@ -5,20 +5,33 @@
 class Entity
 {
 public:
-    Entity(int srcX, int srcY, int srcW, int srcH, float p_x, float p_y, float m_w, float m_h, SDL_Texture* p_tex, SDL_RendererFlip p_flip);
-    float getX();
-    float getY();
-    float getW();
-    float getH();
-    void setX(int val);
-    void setY(int val);
+    Entity(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* p_tex);
+    float getSrcX();
+    float getSrcY();
+    float getSrcW();
+    float getSrcH();
+    void setSrcX(float val);
+    void setSrcY(float val);
+    void setSrcW(float val);
+    void setSrcH(float val);
+    float getDesX();
+    float getDesY();
+    float getDesW();
+    float getDesH();
+    void setDesX(float val);
+    void setDesY(float val);
+    void setDesW(float val);
+    void setDesH(float val);
+    SDL_Texture* getTex();
+    void setTex(SDL_Texture* newTex);
     SDL_RendererFlip getFlip();
     void setFlip(SDL_RendererFlip newFlip);
-    SDL_Texture* getTex();
-    SDL_Rect getCurrentFrame();
-private:
-    float x, y, w, h;
-    SDL_Rect currentFrame;
+    SDL_Rect getSrcFrame();
+    SDL_Rect getDestFrame();
+protected:
+    float srcX, srcY, srcW, srcH;
+    float desX, desY, desW, desH;
+    SDL_Rect srcFrame, destFrame;
     SDL_Texture* tex;
     SDL_RendererFlip flip;
 };

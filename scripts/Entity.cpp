@@ -6,44 +6,108 @@ using namespace std;
 
 #include "Entity.hpp"
 
-Entity::Entity(int srcX, int srcY, int srcW, int srcH, float p_x, float p_y, float m_w, float m_h, SDL_Texture* p_tex, SDL_RendererFlip p_flip)
-:x(p_x), y(p_y), w(m_h), h(m_w), tex(p_tex), flip(p_flip)
+Entity::Entity(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* p_tex)
+:srcX(srcX), srcY(srcY), srcW(srcW), srcH(srcH), desX(desX), desY(desY), desW(desW), desH(desH), tex(p_tex)
 {
-    currentFrame.x = srcX;
-    currentFrame.y = srcY;
-    currentFrame.w = srcW;
-    currentFrame.h = srcH;
+    flip = SDL_FLIP_NONE;
+
+    srcFrame.x = srcX;
+    srcFrame.y = srcY;
+    srcFrame.w = srcW;
+    srcFrame.h = srcH;
+
+    destFrame.x = desX;
+    destFrame.y = desY;
+    destFrame.w = desW;
+    destFrame.h = desH;
+
+}
+float Entity::getSrcX()
+{
+    return srcX;
 }
 
-float Entity::getX()
+float Entity::getSrcY()
 {
-    return x;
+    return srcY;
 }
 
-void Entity::setX(int val)
+float Entity::getSrcW()
 {
-    x = val;
+    return srcW;
 }
 
-float Entity::getY()
+float Entity::getSrcH()
 {
-    return y;
+    return srcH;
 }
 
-
-float Entity::getW()
+float Entity::getDesX()
 {
-    return w;
+    return desX;
 }
 
-float Entity::getH()
+float Entity::getDesY()
 {
-    return h;
+    return desY;
 }
 
-void Entity::setY(int val)
+float Entity::getDesW()
 {
-    y = val;
+    return desW;
+}
+
+float Entity::getDesH()
+{
+    return desH;
+}
+
+void Entity::setSrcX(float val)
+{
+    srcX = val;
+    srcFrame.x = srcX;
+}
+
+void Entity::setSrcY(float val)
+{
+    srcY = val;
+    srcFrame.y = srcY;
+}
+
+void Entity::setSrcW(float val)
+{
+    srcW = val;
+    srcFrame.w = srcW;
+}
+
+void Entity::setSrcH(float val)
+{
+    srcH = val;
+    srcFrame.h = srcH;
+}
+
+void Entity::setDesX(float val)
+{
+    desX = val;
+    destFrame.x = desX;
+}
+
+void Entity::setDesY(float val)
+{
+    desY = val;
+    destFrame.y = desY;
+}
+
+void Entity::setDesW(float val)
+{
+    desW = val;
+    destFrame.w = desW;
+}
+
+void Entity::setDesH(float val)
+{
+    desH = val;
+    destFrame.h = desH;
 }
 
 SDL_RendererFlip Entity::getFlip()
@@ -61,7 +125,17 @@ SDL_Texture* Entity::getTex()
     return tex;
 }
 
-SDL_Rect Entity::getCurrentFrame()
+void Entity::setTex(SDL_Texture *newTex)
 {
-    return currentFrame;
+    tex = newTex;
+}
+
+SDL_Rect Entity::getSrcFrame()
+{
+    return srcFrame;
+}
+
+SDL_Rect Entity::getDestFrame()
+{
+    return destFrame;
 }

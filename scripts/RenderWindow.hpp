@@ -11,10 +11,10 @@ public:
     SDL_Texture* loadTexture(const char* p_filePath);
     void cleanUp();
     void clear();
+    SDL_Rect src(Entity& p_entity);
     void render(Entity& p_entity);
     void display();
 private:
     SDL_Window* window;
     SDL_Renderer* renderer;
-
 };
