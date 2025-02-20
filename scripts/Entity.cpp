@@ -6,8 +6,8 @@ using namespace std;
 
 #include "Entity.hpp"
 
-Entity::Entity(int srcX, int srcY, int srcW, int srcH, float p_x, float p_y, SDL_Texture* p_tex)
-:x(p_x), y(p_y), tex(p_tex)
+Entity::Entity(int srcX, int srcY, int srcW, int srcH, float p_x, float p_y, SDL_Texture* p_tex, SDL_RendererFlip p_flip)
+:x(p_x), y(p_y), tex(p_tex), flip(p_flip)
 {
     currentFrame.x = srcX;
     currentFrame.y = srcY;
@@ -33,6 +33,16 @@ float Entity::getY()
 void Entity::setY(int val)
 {
     y = val;
+}
+
+SDL_RendererFlip Entity::getFlip()
+{
+    return flip;
+}
+
+void Entity::setFlip(SDL_RendererFlip newFlip)
+{
+    flip = newFlip;
 }
 
 SDL_Texture* Entity::getTex()

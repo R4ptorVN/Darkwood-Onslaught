@@ -1,4 +1,4 @@
-#include <iostream>
+#include <bits/stdc++.h>
 #include <SDL.h>
 #include <SDL_image.h>
 
@@ -18,12 +18,26 @@ int main(int argc, char* args [])
     RenderWindow window("GAME v1.0", 1280, 720);
 
     SDL_Texture* grassTexture = window.loadTexture("resources/grass.png");
-    SDL_Texture* girlWalk = window.loadTexture("resources/girlWalk.png");
+    SDL_Texture* girlWalk = window.loadTexture("resources/GirlWalk.png");
+    SDL_Texture* girlIdle = window.loadTexture("resources/GirlIdle.png");
 
-    const int movementSpeed = 7;
+    const int movementSpeed = 6;
+    const int frameDistance = 129;
 
-    Entity background(0, 0, 1280, 720, 0, 0, grassTexture);
-    Entity character(40, 50, 49, 79, 50, 50, girlWalk);
+    Entity background(0, 0, 1280, 720, 0, 0, grassTexture, SDL_FLIP_NONE);
+
+    vector<Entity> walkingFrames;
+    vector<Entity> idleFrames;
+
+    int srcX = 0, srcY = 0;
+    for (int i = 0; i < 12; i++)
+    {
+         Entity walking(srcX, srcY, 129, 130, 550, 250, girlWalk, SDL_FLIP_NONE);
+         walkingFrames.push_back(walking);
+         srcX += frameDistance;
+    }
+    Entity idle(0, 0, 129, 130, 550, 250, girlIdle, SDL_FLIP_NONE);
+    Entity character = idle;
 
     if (grassTexture == NULL)
         SDL_Log("Failed to load texture");
@@ -37,6 +51,9 @@ int main(int argc, char* args [])
     bool movingUp = false;
     bool movingDown = false;
 
+    int frame = 0;
+    bool facingLeft = false;
+
     while (gameRunning)
     {
         while (SDL_PollEvent(&event))
@@ -49,6 +66,7 @@ int main(int argc, char* args [])
                 {
                     case SDLK_a:
                     {
+                        facingLeft = true;
                         movingLeft = true;
                         break;
                     }
@@ -61,6 +79,7 @@ int main(int argc, char* args [])
 
                     case SDLK_d:
                     {
+                        facingLeft = false;
                         movingRight = true;
                         break;
                     }
@@ -70,6 +89,19 @@ int main(int argc, char* args [])
                         movingDown = true;
                         break;
                     }
+                }
+                if (movingUp || movingDown || movingLeft || movingRight)
+                {
+                    frame++;
+                    if (frame > 11)
+                        frame = 0;
+                    int curX = character.getX();
+                    int curY = character.getY();
+                    character = walkingFrames[frame];
+                    if (facingLeft)
+                        character.setFlip(SDL_FLIP_HORIZONTAL);
+                    character.setX(curX);
+                    character.setY(curY);
                 }
                 if (movingLeft)
                     character.setX(character.getX() - movementSpeed);
@@ -83,32 +115,32 @@ int main(int argc, char* args [])
 
             if (event.type == SDL_KEYUP)
             {
-                    switch (event.key.keysym.sym)
+                switch (event.key.keysym.sym)
+                {
+                    case SDLK_a:
                     {
-                        case SDLK_a:
-                        {
-                            movingLeft = false;
-                            break;
-                        }
-
-                        case SDLK_w:
-                        {
-                            movingUp = false;
-                            break;
-                        }
-
-                        case SDLK_d:
-                        {
-                            movingRight = false;
-                            break;
-                        }
-
-                        case SDLK_s:
-                        {
-                            movingDown = false;
-                            break;
-                        }
+                        movingLeft = false;
+                        break;
                     }
+
+                    case SDLK_w:
+                    {
+                        movingUp = false;
+                        break;
+                    }
+
+                    case SDLK_d:
+                    {
+                        movingRight = false;
+                        break;
+                    }
+
+                    case SDLK_s:
+                    {
+                        movingDown = false;
+                        break;
+                    }
+                }
                 if (movingLeft)
                     character.setX(character.getX() - movementSpeed);
                 if (movingUp)
@@ -118,9 +150,17 @@ int main(int argc, char* args [])
                 if (movingDown)
                     character.setY(character.getY() + movementSpeed);
             }
-
         }
-
+        if (!movingLeft && !movingUp && !movingRight && !movingDown)
+        {
+            int curX = character.getX();
+            int curY = character.getY();
+            character = idle;
+            if (facingLeft)
+                character.setFlip(SDL_FLIP_HORIZONTAL);
+            character.setX(curX);
+            character.setY(curY);
+        }
         window.clear();
         window.render(background);
         window.render(character);
