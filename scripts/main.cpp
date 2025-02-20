@@ -21,7 +21,7 @@ int main(int argc, char* args [])
     SDL_Texture* girlWalk = window.loadTexture("resources/GirlWalk.png");
     SDL_Texture* girlIdle = window.loadTexture("resources/GirlIdle.png");
 
-    const int movementSpeed = 6;
+    int movementSpeed = 6;
     const int frameDistance = 129;
 
     Entity background(0, 0, 1280, 720, 0, 0, grassTexture, SDL_FLIP_NONE);
@@ -54,6 +54,7 @@ int main(int argc, char* args [])
     int frame = 0;
     bool facingLeft = false;
 
+    int movingDirections = 0;
     while (gameRunning)
     {
         while (SDL_PollEvent(&event))
@@ -66,6 +67,8 @@ int main(int argc, char* args [])
                 {
                     case SDLK_a:
                     {
+                        if (!movingLeft)
+                            movingDirections++;
                         facingLeft = true;
                         movingLeft = true;
                         break;
@@ -73,12 +76,16 @@ int main(int argc, char* args [])
 
                     case SDLK_w:
                     {
+                        if (!movingUp)
+                            movingDirections++;
                         movingUp = true;
                         break;
                     }
 
                     case SDLK_d:
                     {
+                        if (!movingRight)
+                            movingDirections++;
                         facingLeft = false;
                         movingRight = true;
                         break;
@@ -86,6 +93,8 @@ int main(int argc, char* args [])
 
                     case SDLK_s:
                     {
+                        if (!movingDown)
+                            movingDirections++;
                         movingDown = true;
                         break;
                     }
@@ -103,6 +112,10 @@ int main(int argc, char* args [])
                     character.setX(curX);
                     character.setY(curY);
                 }
+                if (movingDirections > 1)
+                    movementSpeed = 3;
+                else
+                    movementSpeed = 6;
                 if (movingLeft)
                     character.setX(character.getX() - movementSpeed);
                 if (movingUp)
@@ -120,24 +133,28 @@ int main(int argc, char* args [])
                     case SDLK_a:
                     {
                         movingLeft = false;
+                        movingDirections--;
                         break;
                     }
 
                     case SDLK_w:
                     {
                         movingUp = false;
+                        movingDirections--;
                         break;
                     }
 
                     case SDLK_d:
                     {
                         movingRight = false;
+                        movingDirections--;
                         break;
                     }
 
                     case SDLK_s:
                     {
                         movingDown = false;
+                        movingDirections--;
                         break;
                     }
                 }
