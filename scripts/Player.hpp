@@ -14,7 +14,7 @@ class Player: public Entity
         SDL_Rect getChestFrame();
         void moveCharacter();
         void updateFrame(SDL_Texture* tex, float x, float y, bool flip);
-        void updateMovement(SDL_Event &event, vector<Entity> &ObstaclesLower, vector<Entity> &ObstaclesUpper);
+        void updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &ObstaclesUpper, float currentFrameTime);
     private:
 
         SDL_Texture* girlIdle;
@@ -29,4 +29,6 @@ class Player: public Entity
 
         bool facingLeft;
         int movingDirections;
+
+        float lastFrameTime;
 };

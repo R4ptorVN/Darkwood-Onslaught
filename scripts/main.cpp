@@ -55,8 +55,8 @@ int main(int argc, char* args [])
     vector<SDL_Texture*> mainCharacterAnimations;
     mainCharacterAnimations.push_back(girlIdle);
     mainCharacterAnimations.push_back(girlWalk);
-    Player mainCharacter(42, 55, 41, 75, 300, 500, 41, 75, mainCharacterAnimations);
 
+    Player mainCharacter(42, 55, 41, 75, 300, 500, 41, 75, mainCharacterAnimations);
 
     bool gameRunning = true;
 
@@ -64,25 +64,61 @@ int main(int argc, char* args [])
 
     while (gameRunning)
     {
+        Uint32 startTime = SDL_GetPerformanceCounter();
+
+        bool pauseGame = false;
+
         while (SDL_PollEvent(&event))
         {
-            if (event.type == SDL_QUIT)
+            if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE))
                 gameRunning = false;
-            mainCharacter.updateMovement(event, ObstaclesLower, ObstaclesUpper);
+            else if (event.type == SDL_WINDOWEVENT)
+            {
+                switch (event.window.event)
+                {
+                        case SDL_WINDOWEVENT_FOCUS_LOST:
+                            pauseGame = true;
+                        break;
+
+                        case SDL_WINDOWEVENT_FOCUS_GAINED:
+                            pauseGame = false;
+                        break;
+
+                        case SDL_WINDOWEVENT_MOVED:
+                            pauseGame = true;
+                        break;
+                }
+            }
         }
-        SDL_Delay(20);
+
+        if (pauseGame || !gameRunning)
+            continue;
+
         window.init();
+
+        float currentFrameTime = SDL_GetPerformanceCounter() / (float)SDL_GetPerformanceFrequency() * 1000.0f;
+        mainCharacter.updateMovement(ObstaclesLower, ObstaclesUpper, currentFrameTime);
+
         updateCamera(camera, mainCharacter);
-        window.clear();
+
         window.render(background, camera);
         for (Entity &object : ObstaclesLower)
             window.render(object, camera);
         window.render(mainCharacter, camera);
         for (Entity &object : ObstaclesUpper)
             window.render(object, camera);
+
         window.display();
+
+        Uint32 endTime = SDL_GetPerformanceCounter();
+
+        float elapsedTime = (endTime - startTime) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
+
+        SDL_Delay(floor(16.666f - elapsedTime));
     }
+
     window.cleanUp();
     SDL_Quit();
+
     return 0;
 }

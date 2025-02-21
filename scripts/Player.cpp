@@ -13,7 +13,7 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
         girlIdle = textures[0];
         girlWalk = textures[1];
 
-        movementSpeed = 5;
+        movementSpeed = 3;
 
         movingLeft = movingRight = movingUp = movingDown = false;
 
@@ -21,6 +21,8 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
 
         facingLeft = false;
         movingDirections = 0;
+
+        lastFrameTime = 0;
 
         float tmp_srcX = srcX;
         float tmp_srcY = srcY;
@@ -72,116 +74,60 @@ void Player::updateFrame(SDL_Texture* tex, float x, float y, bool flip)
             setFlip(SDL_FLIP_NONE);
 }
 
-void Player::updateMovement(SDL_Event &event, vector<Entity> &ObstaclesLower, vector<Entity> &ObstaclesUpper)
+void Player::updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &ObstaclesUpper, float currentFrameTime)
 {
-        if(event.type == SDL_KEYDOWN)
+        const Uint8* keyState = SDL_GetKeyboardState(NULL);
+        movingLeft = keyState[SDL_SCANCODE_A];
+        movingRight = keyState[SDL_SCANCODE_D];
+        movingUp = keyState[SDL_SCANCODE_W];
+        movingDown = keyState[SDL_SCANCODE_S];
+
+        movingDirections = 0;
+        if (movingLeft)
         {
-            switch (event.key.keysym.sym)
-            {
-                case SDLK_a:
-                {
-                    if (!movingLeft)
-                        movingDirections++;
-                    facingLeft = true;
-                    movingLeft = true;
-                    break;
-                }
+            movingDirections++;
+            facingLeft = true;
+        }
 
-                case SDLK_w:
-                {
-                    if (!movingUp)
-                        movingDirections++;
-                    movingUp = true;
-                    break;
-                }
+        if (movingRight)
+        {
+            movingDirections++;
+            facingLeft = false;
+        }
 
-                case SDLK_d:
-                {
-                    if (!movingRight)
-                        movingDirections++;
-                    facingLeft = false;
-                    movingRight = true;
-                    break;
-                }
+        if (movingUp)
+            movingDirections++;
 
-                case SDLK_s:
-                {
-                    if (!movingDown)
-                        movingDirections++;
-                    movingDown = true;
-                    break;
-                }
-            }
-            if (movingUp || movingDown || movingLeft || movingRight)
+        if (movingDown)
+            movingDirections++;
+
+        if (movingUp || movingDown || movingLeft || movingRight)
+        {
+            if (currentFrameTime - lastFrameTime > 100)
             {
                 frame++;
                 if (frame > 11)
                     frame = 0;
-                updateFrame(girlWalk, srcXFrames[frame], srcYFrames[frame], facingLeft);
+                lastFrameTime = currentFrameTime;
             }
-
-            if (movingDirections > 1)
-                movementSpeed = 2.5;
-            else
-                movementSpeed = 5;
-
-            float prev_desX = desX;
-            float prev_desY = desY;
-
-            moveCharacter();
-
-            if (checkCollision(getLegFrame(), ObstaclesLower) || checkCollision(getChestFrame(), ObstaclesUpper))
-            {
-                setDesX(prev_desX);
-                setDesY(prev_desY);
-            }
+            updateFrame(girlWalk, srcXFrames[frame], srcYFrames[frame], facingLeft);
         }
-
-        if (event.type == SDL_KEYUP)
-        {
-            switch (event.key.keysym.sym)
-            {
-                case SDLK_a:
-                {
-                    movingLeft = false;
-                    movingDirections--;
-                    break;
-                }
-
-                case SDLK_w:
-                {
-                    movingUp = false;
-                    movingDirections--;
-                    break;
-                }
-
-                case SDLK_d:
-                {
-                    movingRight = false;
-                    movingDirections--;
-                    break;
-                }
-
-                case SDLK_s:
-                {
-                    movingDown = false;
-                    movingDirections--;
-                    break;
-                }
-            }
-
-            float prev_desX = desX;
-            float prev_desY = desY;
-
-            moveCharacter();
-
-            if (checkCollision(getLegFrame(), ObstaclesLower) || checkCollision(getChestFrame(), ObstaclesUpper))
-            {
-                setDesX(prev_desX);
-                setDesY(prev_desY);
-            }
-        }
-
-        if (!movingLeft && !movingUp && !movingRight && !movingDown)
+        else
             updateFrame(girlIdle, srcXFrames[0], srcYFrames[0], facingLeft);
+
+        if (movingDirections > 1)
+            movementSpeed = 1.5;
+        else
+            movementSpeed = 3;
+
+        float prev_desX = desX;
+        float prev_desY = desY;
+
+        moveCharacter();
+
+        if (checkCollision(getLegFrame(), ObstaclesLower) || checkCollision(getChestFrame(), ObstaclesUpper))
+        {
+                setDesX(prev_desX);
+                setDesY(prev_desY);
+        }
 }
