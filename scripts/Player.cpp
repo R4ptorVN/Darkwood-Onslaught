@@ -3,6 +3,7 @@
 using namespace std;
 
 #include "Player.hpp"
+#include "Functions.hpp"
 
 
 
@@ -62,17 +63,6 @@ void Player::updateFrame(SDL_Texture* tex, float x, float y, bool flip)
             setFlip(SDL_FLIP_HORIZONTAL);
         else
             setFlip(SDL_FLIP_NONE);
-}
-
-bool checkCollision(SDL_Rect a, vector<Entity> &Obstacles)
-{
-        for (Entity object : Obstacles)
-        {
-            SDL_Rect b = object.getDestFrame();
-            if (SDL_HasIntersection(&a , &b))
-                return true;
-        }
-        return false;
 }
 
 void Player::updateMovement(SDL_Event &event, vector<Entity> &Obstacles)

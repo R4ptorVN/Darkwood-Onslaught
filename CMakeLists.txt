@@ -10,7 +10,9 @@ add_executable(${PROJECT_NAME} scripts/main.cpp
         scripts/Entity.hpp
         scripts/Entity.cpp
         scripts/Player.cpp
-        scripts/Player.hpp)
+        scripts/Player.hpp
+        scripts/Functions.cpp
+        scripts/Functions.hpp)
 
 # --- SDL2 SETUP ---
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)

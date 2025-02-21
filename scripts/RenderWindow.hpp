@@ -7,12 +7,12 @@
 class RenderWindow
 {
 public:
-    RenderWindow(const char* p_title, int p_w, int p_h);
+    RenderWindow(const char* p_title);
     SDL_Texture* loadTexture(const char* p_filePath);
     void cleanUp();
     void clear();
-    SDL_Rect src(Entity& p_entity);
-    void render(Entity& p_entity);
+    void init();
+    void render(Entity& p_entity, SDL_Rect &camera);
     void display();
 private:
     SDL_Window* window;
