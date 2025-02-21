@@ -41,6 +41,13 @@ SDL_Rect Player::getLegFrame()
         return legFrame;
 }
 
+SDL_Rect Player::getChestFrame()
+{
+    SDL_Rect chestFrame = getDestFrame();
+    chestFrame.h -= 50;
+    return chestFrame;
+}
+
 void Player::moveCharacter()
 {
         if (movingLeft)
@@ -65,7 +72,7 @@ void Player::updateFrame(SDL_Texture* tex, float x, float y, bool flip)
             setFlip(SDL_FLIP_NONE);
 }
 
-void Player::updateMovement(SDL_Event &event, vector<Entity> &Obstacles)
+void Player::updateMovement(SDL_Event &event, vector<Entity> &ObstaclesLower, vector<Entity> &ObstaclesUpper)
 {
         if(event.type == SDL_KEYDOWN)
         {
@@ -123,7 +130,7 @@ void Player::updateMovement(SDL_Event &event, vector<Entity> &Obstacles)
 
             moveCharacter();
 
-            if (checkCollision(getLegFrame(), Obstacles))
+            if (checkCollision(getLegFrame(), ObstaclesLower) || checkCollision(getChestFrame(), ObstaclesUpper))
             {
                 setDesX(prev_desX);
                 setDesY(prev_desY);
@@ -168,7 +175,7 @@ void Player::updateMovement(SDL_Event &event, vector<Entity> &Obstacles)
 
             moveCharacter();
 
-            if (checkCollision(getLegFrame(), Obstacles))
+            if (checkCollision(getLegFrame(), ObstaclesLower) || checkCollision(getChestFrame(), ObstaclesUpper))
             {
                 setDesX(prev_desX);
                 setDesY(prev_desY);

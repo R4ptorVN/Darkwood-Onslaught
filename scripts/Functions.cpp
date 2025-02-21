@@ -4,7 +4,7 @@ using namespace std;
 
 bool checkCollision(SDL_Rect a, vector<Entity> &Obstacles)
 {
-        for (Entity object : Obstacles)
+        for (Entity &object : Obstacles)
         {
             SDL_Rect b = object.getDestFrame();
             if (SDL_HasIntersection(&a , &b))
@@ -25,3 +25,4 @@ void updateCamera(SDL_Rect &camera, Player &mainCharacter)
         if (camera.x > LEVEL_WIDTH - camera.w) camera.x = LEVEL_WIDTH - camera.w;
         if (camera.y > LEVEL_HEIGHT - camera.h) camera.y = LEVEL_HEIGHT - camera.h;
 }
+

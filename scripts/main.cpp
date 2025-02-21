@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+﻿#include <bits/stdc++.h>
 #include <SDL.h>
 #include <SDL_image.h>
 
@@ -8,6 +8,7 @@ using namespace std;
 #include "Entity.hpp"
 #include "Player.hpp"
 #include "Functions.hpp"
+#include "Obstacle.hpp"
 
 int main(int argc, char* args [])
 {
@@ -32,17 +33,20 @@ int main(int argc, char* args [])
     const int frameDistance = 128;
 
     Entity background(0, 0, 1280, 720, 0, 0, 1280, 720, grassTexture);
-    Entity rock1(0, 0, 32, 32, 300, 300, 32 * 4, 32 * 4, rock1Texture);
-    Entity rock2(0, 0, 37, 33, 800, 200, 37 * 2, 33 * 2, rock2Texture);
-    Entity rock3(0, 0, 25, 26, 700, 550, 25 * 4, 26 * 4, rock3Texture);
-    Entity rock4(0, 0, 37, 33, 175, 100, 37 * 2, 33 * 2, rock2Texture);
-    rock4.setFlip(SDL_FLIP_HORIZONTAL);
 
-    vector<Entity> Obstacles;
-    Obstacles.push_back(rock1);
-    Obstacles.push_back(rock2);
-    Obstacles.push_back(rock3);
-    Obstacles.push_back(rock4);
+    Obstacle rock1(0, 0, 32, 32, 300, 300, 32 * 4, 32 * 4, rock1Texture);
+    Obstacle rock2(0, 0, 37, 33, 800, 200, 37 * 3.5, 33 * 3.5, rock2Texture);
+    Obstacle rock3(0, 0, 25, 26, 700, 550, 25 * 4, 26 * 4, rock3Texture);
+
+    vector<Entity> ObstaclesLower;
+    ObstaclesLower.push_back(rock1.getLowerHalf());
+    ObstaclesLower.push_back(rock2.getLowerHalf());
+    ObstaclesLower.push_back(rock3.getLowerHalf());
+
+    vector<Entity> ObstaclesUpper;
+    ObstaclesUpper.push_back(rock1.getUpperHalf());
+    ObstaclesUpper.push_back(rock2.getUpperHalf());
+    ObstaclesUpper.push_back(rock3.getUpperHalf());
 
     vector<SDL_Texture*> mainCharacterAnimations;
     mainCharacterAnimations.push_back(girlIdle);
@@ -60,15 +64,18 @@ int main(int argc, char* args [])
         {
             if (event.type == SDL_QUIT)
                 gameRunning = false;
-            mainCharacter.updateMovement(event, Obstacles);
+            mainCharacter.updateMovement(event, ObstaclesLower, ObstaclesUpper);
         }
+        SDL_Delay(20);
         window.init();
         updateCamera(camera, mainCharacter);
         window.clear();
         window.render(background, camera);
-        for (Entity& object : Obstacles)
+        for (Entity &object : ObstaclesLower)
             window.render(object, camera);
         window.render(mainCharacter, camera);
+        for (Entity &object : ObstaclesUpper)
+            window.render(object, camera);
         window.display();
     }
     window.cleanUp();
