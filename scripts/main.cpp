@@ -21,17 +21,15 @@ int main(int argc, char* args [])
     RenderWindow window("GAME v1.0");
 
     SDL_Texture* grassTexture = window.loadTexture("resources/grass.png");
-    SDL_Texture* girlWalk = window.loadTexture("resources/GirlWalk.png");
-    SDL_Texture* girlIdle = window.loadTexture("resources/GirlIdle.png");
     SDL_Texture* rock1Texture = window.loadTexture("resources/Rock1.png");
     SDL_Texture* rock2Texture = window.loadTexture("resources/Rock2.png");
     SDL_Texture* rock3Texture = window.loadTexture("resources/Rock3.png");
     SDL_Texture* treeTexture = window.loadTexture("resources/Tree1.png");
+    SDL_Texture* girlIdle = window.loadTexture("resources/GirlIdle.png");
+    SDL_Texture* girlWalk = window.loadTexture("resources/GirlWalk.png");
+    SDL_Texture* girlAttack = window.loadTexture("resources/GirlAttack.png");
 
     SDL_Rect camera;
-
-    int movementSpeed = 5;
-    const int frameDistance = 128;
 
     Entity background(0, 0, 1280, 720, 0, 0, 1280, 720, grassTexture);
 
@@ -41,20 +39,24 @@ int main(int argc, char* args [])
     Obstacle tree1(0, 0, 62, 57, 450, 450, 62 * 3, 57 * 3, treeTexture);
 
     vector<Entity> ObstaclesLower;
+    ObstaclesLower.clear();
     ObstaclesLower.push_back(rock1.getLowerHalf());
     ObstaclesLower.push_back(rock2.getLowerHalf());
     ObstaclesLower.push_back(rock3.getLowerHalf());
     ObstaclesLower.push_back(tree1.getLowerHalf());
 
     vector<Entity> ObstaclesUpper;
+    ObstaclesUpper.clear();
     ObstaclesUpper.push_back(rock1.getUpperHalf());
     ObstaclesUpper.push_back(rock2.getUpperHalf());
     ObstaclesUpper.push_back(rock3.getUpperHalf());
     ObstaclesUpper.push_back(tree1.getUpperHalf());
 
     vector<SDL_Texture*> mainCharacterAnimations;
+    mainCharacterAnimations.clear();
     mainCharacterAnimations.push_back(girlIdle);
     mainCharacterAnimations.push_back(girlWalk);
+    mainCharacterAnimations.push_back(girlAttack);
 
     Player mainCharacter(42, 55, 41, 75, 300, 500, 41, 75, mainCharacterAnimations);
 
@@ -78,15 +80,23 @@ int main(int argc, char* args [])
                 {
                         case SDL_WINDOWEVENT_FOCUS_LOST:
                             pauseGame = true;
-                        break;
+                            break;
 
                         case SDL_WINDOWEVENT_FOCUS_GAINED:
                             pauseGame = false;
-                        break;
+                            break;
 
                         case SDL_WINDOWEVENT_MOVED:
                             pauseGame = true;
-                        break;
+                            break;
+
+                        case SDL_WINDOWEVENT_RESIZED:
+                            pauseGame = true;
+                            break;
+
+                        case SDL_WINDOWEVENT_ICCPROF_CHANGED:
+                            pauseGame = true;
+                            break;
                 }
             }
         }
@@ -117,6 +127,7 @@ int main(int argc, char* args [])
         SDL_Delay(floor(16.666f - elapsedTime));
     }
 
+    window.init();
     window.cleanUp();
     SDL_Quit();
 

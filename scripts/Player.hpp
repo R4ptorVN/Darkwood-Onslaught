@@ -13,19 +13,28 @@ class Player: public Entity
         SDL_Rect getLegFrame();
         SDL_Rect getChestFrame();
         void moveCharacter();
-        void updateFrame(SDL_Texture* tex, float x, float y, bool flip);
+        void updateFrame(SDL_Texture* tex, float x, float y, float h, float w, bool flip);
         void updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &ObstaclesUpper, float currentFrameTime);
-    private:
 
+    private:
         SDL_Texture* girlIdle;
         SDL_Texture* girlWalk;
+        SDL_Texture* girlAttack;
 
         float movementSpeed;
-        bool movingLeft, movingRight, movingUp, movingDown;
+        bool movingLeft, movingRight, movingUp, movingDown, attacking;
 
         int frame;
-        float srcXFrames[12];
-        float srcYFrames[12];
+
+        float srcXWalkingFrames[12];
+        float srcYWalkingFrames[12];
+        float srcWWalkingFrames[12];
+        float srcHWalkingFrames[12];
+
+        float srcXAttackingFrames[12];
+        float srcYAttackingFrames[12];
+        float srcWAttackingFrames[12];
+        float srcHAttackingFrames[12];
 
         bool facingLeft;
         int movingDirections;
