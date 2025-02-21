@@ -22,6 +22,14 @@ Entity::Entity(float srcX, float srcY, float srcW, float srcH, float desX, float
     destFrame.h = desH;
 
 }
+
+void Entity::clear()
+{
+     setTex(NULL);
+     setSrcX(0); setSrcY(0); setSrcW(0); setSrcH(0);
+     setDesX(0); setDesY(0); setDesW(0); setDesH(0);
+     setFlip(SDL_FLIP_NONE);
+}
 float Entity::getSrcX()
 {
     return srcX;

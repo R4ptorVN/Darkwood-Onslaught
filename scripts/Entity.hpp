@@ -7,6 +7,7 @@ class Entity
     public:
         Entity();
         Entity(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* p_tex);
+        void clear();
         float getSrcX();
         float getSrcY();
         float getSrcW();

@@ -6,6 +6,7 @@ using namespace std;
 Obstacle::Obstacle(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex)
 :Entity(srcX, srcY, srcW, srcH, desX, desY, desW, desH, tex)
 {
+        upperHalf.clear();
         upperHalf.setTex(tex);
         upperHalf.setSrcX(0);
         upperHalf.setSrcY(0);
@@ -16,6 +17,7 @@ Obstacle::Obstacle(float srcX, float srcY, float srcW, float srcH, float desX, f
         upperHalf.setDesW(desW);
         upperHalf.setDesH(desH / 2);
 
+        lowerHalf.clear();
         lowerHalf.setTex(tex);
         lowerHalf.setSrcX(0);
         lowerHalf.setSrcY(srcH / 2);
