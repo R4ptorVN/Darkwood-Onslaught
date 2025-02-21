@@ -9,22 +9,24 @@ using namespace std;
 class Player: public Entity
 {
     public:
-        Player(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, vector<SDL_Texture*> textures);
+        Player(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex);
         SDL_Rect getLegFrame();
         SDL_Rect getChestFrame();
         void moveCharacter();
-        void updateFrame(SDL_Texture* tex, float x, float y, float h, float w, bool flip);
+        void updateFrame(float x, float y, float h, float w, bool flip);
         void updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &ObstaclesUpper, float currentFrameTime);
 
     private:
-        SDL_Texture* girlIdle;
-        SDL_Texture* girlWalk;
-        SDL_Texture* girlAttack;
 
         float movementSpeed;
         bool movingLeft, movingRight, movingUp, movingDown, attacking;
 
         int frame;
+
+        float srcXIdleFrames[12];
+        float srcYIdleFrames[12];
+        float srcWIdleFrames[12];
+        float srcHIdleFrames[12];
 
         float srcXWalkingFrames[12];
         float srcYWalkingFrames[12];

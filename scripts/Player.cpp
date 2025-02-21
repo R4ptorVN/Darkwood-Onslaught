@@ -5,15 +5,13 @@ using namespace std;
 #include "Player.hpp"
 #include "Functions.hpp"
 
-const int walkingFrames = 12;
+const int idleFrames = 12;
+const int walkingFrames = 8;
 const int attackingFrames = 10;
 
-Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, vector<SDL_Texture*> textures)
-:Entity(srcX, srcY, srcW, srcH, desX, desY, desW, desH, textures[0])
+Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex)
+:Entity(srcX, srcY, srcW, srcH, desX, desY, desW, desH, tex)
 {
-    girlIdle = textures[0];
-    girlWalk = textures[1];
-    girlAttack = textures[2];
 
     movementSpeed = 3;
 
@@ -28,44 +26,64 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
 
     lastFrameTime = 0;
 
-    float tmp_srcX = 42, tmp_srcY = 55, tmp_srcW = 41, tmp_srcH = 75;
-    const float walkingFrameDistance = 128;
+    const float idleFrameDistance = 64;
+    float tmpX = 26, tmpY = 80, tmpW = 12, tmpH = 32;
+    for (int i = 0; i < idleFrames; i++)
+    {
+        srcXIdleFrames[i] = tmpX;
+        srcYIdleFrames[i] = tmpY;
+        srcWIdleFrames[i] = tmpW;
+        srcHIdleFrames[i] = tmpH;
+
+        tmpX += idleFrameDistance;
+    }
+
+    const float walkingFrameDistance = 64;
+    tmpX = 26, tmpY = 208, tmpW = 12, tmpH = 32;
     for (int i = 0; i < walkingFrames; i++)
     {
-         srcXWalkingFrames[i] = tmp_srcX;
-         srcYWalkingFrames[i] = tmp_srcY;
-         srcWWalkingFrames[i] = tmp_srcW;
-         srcHWalkingFrames[i] = tmp_srcH;
+         srcXWalkingFrames[i] = tmpX;
+         srcYWalkingFrames[i] = tmpY;
+         srcWWalkingFrames[i] = tmpW;
+         srcHWalkingFrames[i] = tmpH;
 
-         tmp_srcX += walkingFrameDistance;
+         tmpX += walkingFrameDistance;
     }
-
-    tmp_srcX = 32, tmp_srcY = 55, tmp_srcW = 80, tmp_srcH = 74;
-    const float attackingFrameDistance = 128;
-    for (int i = 0; i < attackingFrames; i++)
-    {
-        srcXAttackingFrames[i] = tmp_srcX;
-        srcYAttackingFrames[i] = tmp_srcY;
-        srcWAttackingFrames[i] = tmp_srcW;
-        srcHAttackingFrames[i] = tmp_srcH;
-
-        if (i < attackingFrames - 2)
-            tmp_srcX += attackingFrameDistance;
-    }
+    //
+    // tmp_srcX = 32, tmp_srcY = 55, tmp_srcW = 80, tmp_srcH = 74;
+    // const float attackingFrameDistance = 128;
+    // for (int i = 0; i < attackingFrames; i++)
+    // {
+    //     srcXAttackingFrames[i] = tmp_srcX;
+    //     srcYAttackingFrames[i] = tmp_srcY;
+    //     srcWAttackingFrames[i] = tmp_srcW;
+    //     srcHAttackingFrames[i] = tmp_srcH;
+    //
+    //     if (i < attackingFrames - 2)
+    //         tmp_srcX += attackingFrameDistance;
+    // }
 }
 
 SDL_Rect Player::getLegFrame()
 {
     SDL_Rect legFrame = getDestFrame();
-    legFrame.y += 60;
-    legFrame.h = 12;
+    legFrame.h *= 2;
+    legFrame.w *= 2;
+
+    legFrame.y += (legFrame.h / 1.5);
+    legFrame.h /= 1.5;
+
     return legFrame;
 }
 
 SDL_Rect Player::getChestFrame()
 {
     SDL_Rect chestFrame = getDestFrame();
-    chestFrame.h -= 50;
+    chestFrame.h *= 2;
+    chestFrame.w *= 2;
+
+    chestFrame.h /= 3;
+
     return chestFrame;
 }
 
@@ -81,14 +99,12 @@ void Player::moveCharacter()
         setDesY(getDesY() + movementSpeed);
 }
 
-void Player::updateFrame(SDL_Texture* tex, float x, float y, float w, float h, bool flip)
+void Player::updateFrame(float x, float y, float w, float h, bool flip)
 {
     setSrcX(x); setSrcY(y);
     setSrcW(w); setSrcH(h);
     setDesW(w); setDesH(h);
 
-    if (getTex() != tex)
-        setTex(tex);
     if (flip)
         setFlip(SDL_FLIP_HORIZONTAL);
     else
@@ -120,7 +136,7 @@ void Player::updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &Obst
             lastFrameTime = currentFrameTime;
         }
         frame = max(frame, 0);
-        updateFrame(girlAttack, srcXAttackingFrames[frame], srcYAttackingFrames[frame], srcWAttackingFrames[frame], srcHAttackingFrames[frame], facingLeft);
+        //updateFrame(girlAttack, srcXAttackingFrames[frame], srcYAttackingFrames[frame], srcWAttackingFrames[frame], srcHAttackingFrames[frame], facingLeft);
         return;
     }
 
@@ -152,10 +168,19 @@ void Player::updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &Obst
                 frame = 0;
             lastFrameTime = currentFrameTime;
         }
-        updateFrame(girlWalk, srcXWalkingFrames[frame], srcYWalkingFrames[frame], srcWWalkingFrames[frame], srcHWalkingFrames[frame],  facingLeft);
+        updateFrame(srcXWalkingFrames[frame], srcYWalkingFrames[frame], srcWWalkingFrames[frame], srcHWalkingFrames[frame],  facingLeft);
     }
     else
-        updateFrame(girlIdle, srcXWalkingFrames[0], srcYWalkingFrames[0], srcWWalkingFrames[frame], srcHWalkingFrames[frame], facingLeft);
+    {
+        if (currentFrameTime - lastFrameTime > 100)
+        {
+            frame++;
+            if (frame == walkingFrames)
+                frame = 0;
+            lastFrameTime = currentFrameTime;
+        }
+        updateFrame(srcXIdleFrames[frame], srcYIdleFrames[frame], srcWIdleFrames[frame], srcHIdleFrames[frame], facingLeft);
+    }
 
     if (movingDirections > 1)
         movementSpeed = 1.8;

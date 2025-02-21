@@ -13,6 +13,7 @@ class RenderWindow
         void clear();
         void init();
         void render(Entity& p_entity, SDL_Rect &camera);
+        void renderPlayer(Entity &p_entity, SDL_Rect &camera);
         void display();
     private:
         SDL_Window* window;

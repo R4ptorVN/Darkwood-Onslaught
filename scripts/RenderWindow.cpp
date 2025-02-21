@@ -50,6 +50,29 @@ void RenderWindow::render(Entity& p_entity, SDL_Rect &camera)
     SDL_RenderCopyEx(renderer, p_entity.getTex(), &src, &dest, 0, NULL, p_entity.getFlip());
 }
 
+void RenderWindow::renderPlayer(Entity &p_entity, SDL_Rect &camera)
+{
+    SDL_Rect src = p_entity.getSrcFrame();
+    SDL_Rect dest = p_entity.getDestFrame();
+
+    src.x -= 26;
+    src.y -= 16;
+    src.w += 52;
+    src.h += 16;
+    dest.x -= 26;
+    dest.y -= 16;
+    dest.w += 52;
+    dest.h += 16;
+
+    dest.x -= camera.x;
+    dest.y -= camera.y;
+
+    dest.w *= 2;
+    dest.h *= 2;
+
+    SDL_RenderCopyEx(renderer, p_entity.getTex(), &src, &dest, 0, NULL, p_entity.getFlip());
+}
+
 void RenderWindow::display()
 {
      SDL_RenderPresent(renderer);

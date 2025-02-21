@@ -25,9 +25,9 @@ int main(int argc, char* args [])
     SDL_Texture* rock2Texture = window.loadTexture("resources/Rock2.png");
     SDL_Texture* rock3Texture = window.loadTexture("resources/Rock3.png");
     SDL_Texture* treeTexture = window.loadTexture("resources/Tree1.png");
-    SDL_Texture* girlIdle = window.loadTexture("resources/GirlIdle.png");
-    SDL_Texture* girlWalk = window.loadTexture("resources/GirlWalk.png");
-    SDL_Texture* girlAttack = window.loadTexture("resources/GirlAttack.png");
+    SDL_Texture* playerTexture = window.loadTexture("resources/Warrior.png");
+
+    //BOX SIZE: 64 48
 
     SDL_Rect camera;
 
@@ -52,13 +52,7 @@ int main(int argc, char* args [])
     ObstaclesUpper.push_back(rock3.getUpperHalf());
     ObstaclesUpper.push_back(tree1.getUpperHalf());
 
-    vector<SDL_Texture*> mainCharacterAnimations;
-    mainCharacterAnimations.clear();
-    mainCharacterAnimations.push_back(girlIdle);
-    mainCharacterAnimations.push_back(girlWalk);
-    mainCharacterAnimations.push_back(girlAttack);
-
-    Player mainCharacter(42, 55, 41, 75, 300, 500, 41, 75, mainCharacterAnimations);
+    Player mainCharacter(26, 80, 12, 32, 300, 500, 12, 32, playerTexture);
 
     bool gameRunning = true;
 
@@ -114,7 +108,7 @@ int main(int argc, char* args [])
         window.render(background, camera);
         for (Entity &object : ObstaclesLower)
             window.render(object, camera);
-        window.render(mainCharacter, camera);
+        window.renderPlayer(mainCharacter, camera);
         for (Entity &object : ObstaclesUpper)
             window.render(object, camera);
 
