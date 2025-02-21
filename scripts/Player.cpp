@@ -22,10 +22,12 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
         movingDirections = 0;
 
         float tmp_srcX = srcX;
+        float tmp_srcY = srcY;
         const float walkingFrameDistance = 128;
         for (int i = 0; i < 12; i++)
         {
              srcXFrames[i] = tmp_srcX;
+             srcYFrames[i] = tmp_srcY;
              tmp_srcX += walkingFrameDistance;
         }
 }
@@ -33,9 +35,33 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
 SDL_Rect Player::getLegFrame()
 {
         SDL_Rect legFrame = getDestFrame();
-        legFrame.y += 50;
-        legFrame.h = 22;
+        legFrame.y += 60;
+        legFrame.h = 12;
         return legFrame;
+}
+
+void Player::moveCharacter()
+{
+        if (movingLeft)
+            setDesX(getDesX() - movementSpeed);
+        if (movingUp)
+            setDesY(getDesY() - movementSpeed);
+        if (movingRight)
+            setDesX(getDesX() + movementSpeed);
+        if (movingDown)
+            setDesY(getDesY() + movementSpeed);
+}
+
+void Player::updateFrame(SDL_Texture* tex, float x, float y, bool flip)
+{
+        setSrcX(x);
+        setSrcY(y);
+        if (getTex() != tex)
+            setTex(tex);
+        if (flip)
+            setFlip(SDL_FLIP_HORIZONTAL);
+        else
+            setFlip(SDL_FLIP_NONE);
 }
 
 bool checkCollision(SDL_Rect a, vector<Entity> &Obstacles)
@@ -94,14 +120,9 @@ void Player::updateMovement(SDL_Event &event, vector<Entity> &Obstacles)
                 frame++;
                 if (frame > 11)
                     frame = 0;
-                setSrcX(srcXFrames[frame]);
-                if (getTex() != girlWalk)
-                    setTex(girlWalk);
-                if (facingLeft)
-                    setFlip(SDL_FLIP_HORIZONTAL);
-                else
-                    setFlip(SDL_FLIP_NONE);
+                updateFrame(girlWalk, srcXFrames[frame], srcYFrames[frame], facingLeft);
             }
+
             if (movingDirections > 1)
                 movementSpeed = 2.5;
             else
@@ -110,14 +131,7 @@ void Player::updateMovement(SDL_Event &event, vector<Entity> &Obstacles)
             float prev_desX = desX;
             float prev_desY = desY;
 
-            if (movingLeft)
-                setDesX(getDesX() - movementSpeed);
-            if (movingUp)
-                setDesY(getDesY() - movementSpeed);
-            if (movingRight)
-                setDesX(getDesX() + movementSpeed);
-            if (movingDown)
-                setDesY(getDesY() + movementSpeed);
+            moveCharacter();
 
             if (checkCollision(getLegFrame(), Obstacles))
             {
@@ -162,14 +176,7 @@ void Player::updateMovement(SDL_Event &event, vector<Entity> &Obstacles)
             float prev_desX = desX;
             float prev_desY = desY;
 
-            if (movingLeft)
-                setDesX(getDesX() - movementSpeed);
-            if (movingUp)
-                setDesY(getDesY() - movementSpeed);
-            if (movingRight)
-                setDesX(getDesX() + movementSpeed);
-            if (movingDown)
-                setDesY(getDesY() + movementSpeed);
+            moveCharacter();
 
             if (checkCollision(getLegFrame(), Obstacles))
             {
@@ -177,17 +184,7 @@ void Player::updateMovement(SDL_Event &event, vector<Entity> &Obstacles)
                 setDesY(prev_desY);
             }
         }
-        if (!movingLeft && !movingUp && !movingRight && !movingDown)
-        {
-            if (getTex() != girlIdle)
-            {
-                setTex(girlIdle);
-                setSrcX(srcXFrames[0]);
-            }
 
-            if (facingLeft)
-                setFlip(SDL_FLIP_HORIZONTAL);
-            else
-                setFlip(SDL_FLIP_NONE);
-        }
+        if (!movingLeft && !movingUp && !movingRight && !movingDown)
+            updateFrame(girlIdle, srcXFrames[0], srcYFrames[0], facingLeft);
 }
