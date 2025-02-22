@@ -31,7 +31,7 @@ int main(int argc, char* args [])
 
     SDL_Rect camera;
 
-    Entity background(0, 0, 1280, 720, 0, 0, 1280, 720, grassTexture);
+    Entity map(0, 0, 1280, 720, 0, 0, 1280, 720, grassTexture);
 
     Obstacle rock1(0, 0, 32, 32, 300, 300, 32 * 4, 32 * 4, rock1Texture);
     Obstacle rock2(0, 0, 37, 33, 800, 200, 37 * 3.5, 33 * 3.5, rock2Texture);
@@ -101,11 +101,11 @@ int main(int argc, char* args [])
         window.init();
 
         float currentFrameTime = SDL_GetPerformanceCounter() / (float)SDL_GetPerformanceFrequency() * 1000.0f;
-        mainCharacter.updateMovement(ObstaclesLower, ObstaclesUpper, currentFrameTime);
+        mainCharacter.updateMovement(ObstaclesLower, ObstaclesUpper, map, currentFrameTime);
 
         updateCamera(camera, mainCharacter);
 
-        window.render(background, camera);
+        window.render(map, camera);
         for (Entity &object : ObstaclesLower)
             window.render(object, camera);
         window.renderPlayer(mainCharacter, camera);

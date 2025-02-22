@@ -11,4 +11,3 @@ const int SCREEN_HEIGHT = 360;
 
 bool checkCollision(SDL_Rect a, vector<Entity> &Obstacles);
 void updateCamera(SDL_Rect &camera, Player &mainCharacter);
-
