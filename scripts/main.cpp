@@ -58,6 +58,7 @@ int main(int argc, char* args [])
 
     SDL_Event event;
 
+
     while (gameRunning)
     {
         Uint32 startTime = SDL_GetPerformanceCounter();
@@ -66,7 +67,7 @@ int main(int argc, char* args [])
 
         while (SDL_PollEvent(&event))
         {
-            if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE))
+            if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) || (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE))
                 gameRunning = false;
             else if (event.type == SDL_WINDOWEVENT)
             {
@@ -83,14 +84,6 @@ int main(int argc, char* args [])
                         case SDL_WINDOWEVENT_MOVED:
                             pauseGame = true;
                             break;
-
-                        case SDL_WINDOWEVENT_RESIZED:
-                            pauseGame = true;
-                            break;
-
-                        case SDL_WINDOWEVENT_ICCPROF_CHANGED:
-                            pauseGame = true;
-                            break;
                 }
             }
         }
@@ -100,7 +93,11 @@ int main(int argc, char* args [])
 
         window.init();
 
-        float currentFrameTime = SDL_GetPerformanceCounter() / (float)SDL_GetPerformanceFrequency() * 1000.0f;
+        float Perf = SDL_GetPerformanceFrequency();
+        if (Perf == 0)
+            Perf = 1;
+        float currentFrameTime = SDL_GetPerformanceCounter() / Perf * 1000.0f;
+
         mainCharacter.updateMovement(ObstaclesLower, ObstaclesUpper, map, currentFrameTime);
 
         updateCamera(camera, mainCharacter);
@@ -116,7 +113,10 @@ int main(int argc, char* args [])
 
         Uint32 endTime = SDL_GetPerformanceCounter();
 
-        float elapsedTime = (endTime - startTime) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
+        Perf = SDL_GetPerformanceFrequency();
+        if (Perf == 0)
+            Perf = 1;
+        float elapsedTime = (endTime - startTime) / Perf * 1000.0f;
 
         SDL_Delay(floor(16.666f - elapsedTime));
     }
