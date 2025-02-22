@@ -13,7 +13,7 @@ class Player: public Entity
         SDL_Rect getLegFrame();
         SDL_Rect getChestFrame();
         void moveCharacter();
-        void updateFrame(float x, float y, float h, float w, bool flip);
+        void updateFrame(float x, float y);
         void updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &ObstaclesUpper, float currentFrameTime);
 
     private:
@@ -23,22 +23,15 @@ class Player: public Entity
 
         int frame;
 
-        float srcXIdleFrames[12];
-        float srcYIdleFrames[12];
-        float srcWIdleFrames[12];
-        float srcHIdleFrames[12];
+        float srcXFrames[20];
 
-        float srcXWalkingFrames[12];
-        float srcYWalkingFrames[12];
-        float srcWWalkingFrames[12];
-        float srcHWalkingFrames[12];
+        float srcYIdleFrames[4];
 
-        float srcXAttackingFrames[12];
-        float srcYAttackingFrames[12];
-        float srcWAttackingFrames[12];
-        float srcHAttackingFrames[12];
+        float srcYWalkingFrames[4];
 
-        bool facingLeft;
+        float srcYAttackingFrames[4];
+
+        int movingDirection;
         int movingDirections;
 
         float lastFrameTime;

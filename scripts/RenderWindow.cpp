@@ -61,11 +61,12 @@ void RenderWindow::renderPlayer(Entity &p_entity, SDL_Rect &camera)
     src.x -= 26;
     src.y -= 16;
     src.w += 52;
-    src.h += 16;
+    src.h += 32;
+
     dest.x -= (26 * 2);
     dest.y -= (16 * 2);
     dest.w += (52 * 2);
-    dest.h += (16 * 2);
+    dest.h += (32 * 2);
 
     SDL_RenderCopyEx(renderer, p_entity.getTex(), &src, &dest, 0, NULL, p_entity.getFlip());
 }
