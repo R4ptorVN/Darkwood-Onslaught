@@ -52,7 +52,7 @@ int main(int argc, char* args [])
     ObstaclesUpper.push_back(rock3.getUpperHalf());
     ObstaclesUpper.push_back(tree1.getUpperHalf());
 
-    Player mainCharacter(26, 80, 12, 32, 300, 500, 12, 32, playerTexture);
+    Player mainCharacter(26, 80, 12, 32, 300, 500, 12 * 2, 32 * 2, playerTexture);
 
     bool gameRunning = true;
 

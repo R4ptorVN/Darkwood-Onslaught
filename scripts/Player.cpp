@@ -7,7 +7,7 @@ using namespace std;
 
 const int idleFrames = 12;
 const int walkingFrames = 8;
-const int attackingFrames = 10;
+const int attackingFrames = 6;
 
 Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex)
 :Entity(srcX, srcY, srcW, srcH, desX, desY, desW, desH, tex)
@@ -49,26 +49,23 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
 
          tmpX += walkingFrameDistance;
     }
-    //
-    // tmp_srcX = 32, tmp_srcY = 55, tmp_srcW = 80, tmp_srcH = 74;
-    // const float attackingFrameDistance = 128;
-    // for (int i = 0; i < attackingFrames; i++)
-    // {
-    //     srcXAttackingFrames[i] = tmp_srcX;
-    //     srcYAttackingFrames[i] = tmp_srcY;
-    //     srcWAttackingFrames[i] = tmp_srcW;
-    //     srcHAttackingFrames[i] = tmp_srcH;
-    //
-    //     if (i < attackingFrames - 2)
-    //         tmp_srcX += attackingFrameDistance;
-    // }
+
+    const float attackingFrameDistance = 64;
+    tmpX = 26, tmpY = 336, tmpW = 12, tmpH = 32;
+    for (int i = 0; i < attackingFrames; i++)
+    {
+        srcXAttackingFrames[i] = tmpX;
+        srcYAttackingFrames[i] = tmpY;
+        srcWAttackingFrames[i] = tmpW;
+        srcHAttackingFrames[i] = tmpH;
+
+        tmpX += attackingFrameDistance;
+    }
 }
 
 SDL_Rect Player::getLegFrame()
 {
     SDL_Rect legFrame = getDestFrame();
-    legFrame.h *= 2;
-    legFrame.w *= 2;
 
     legFrame.y += (legFrame.h / 1.5);
     legFrame.h /= 1.5;
@@ -79,8 +76,6 @@ SDL_Rect Player::getLegFrame()
 SDL_Rect Player::getChestFrame()
 {
     SDL_Rect chestFrame = getDestFrame();
-    chestFrame.h *= 2;
-    chestFrame.w *= 2;
 
     chestFrame.h /= 3;
 
@@ -103,7 +98,7 @@ void Player::updateFrame(float x, float y, float w, float h, bool flip)
 {
     setSrcX(x); setSrcY(y);
     setSrcW(w); setSrcH(h);
-    setDesW(w); setDesH(h);
+    setDesW(w * 2); setDesH(h * 2);
 
     if (flip)
         setFlip(SDL_FLIP_HORIZONTAL);
@@ -123,20 +118,19 @@ void Player::updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &Obst
     if (keyState[SDL_SCANCODE_J] && !attacking)
     {
         attacking = true;
-        frame = -1;
+        frame = 0;
     }
 
     if (attacking)
     {
-        if (currentFrameTime - lastFrameTime > 110)
+        updateFrame(srcXAttackingFrames[frame], srcYAttackingFrames[frame], srcWAttackingFrames[frame], srcHAttackingFrames[frame], facingLeft);
+        if (currentFrameTime - lastFrameTime > 100)
         {
             frame++;
             if (frame == attackingFrames)
                 attacking = false;
             lastFrameTime = currentFrameTime;
         }
-        frame = max(frame, 0);
-        //updateFrame(girlAttack, srcXAttackingFrames[frame], srcYAttackingFrames[frame], srcWAttackingFrames[frame], srcHAttackingFrames[frame], facingLeft);
         return;
     }
 
