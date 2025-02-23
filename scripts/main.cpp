@@ -20,44 +20,35 @@ int main(int argc, char* args [])
 
     RenderWindow window("GAME v1.0");
 
-    SDL_Texture* grassTexture = window.loadTexture("resources/grass.png");
-    SDL_Texture* rock1Texture = window.loadTexture("resources/Rock1.png");
+    SDL_Texture* mapTexture = window.loadTexture("resources/map.png");
     SDL_Texture* rock2Texture = window.loadTexture("resources/Rock2.png");
     SDL_Texture* rock3Texture = window.loadTexture("resources/Rock3.png");
-    SDL_Texture* treeTexture = window.loadTexture("resources/Tree1.png");
     SDL_Texture* playerTexture = window.loadTexture("resources/Warrior.png");
 
     //BOX SIZE: 64 48
 
     SDL_Rect camera;
 
-    Entity map(0, 0, 1280, 720, 0, 0, 1280, 720, grassTexture);
+    Entity map(0, 0, 512, 384, 0, 0, 512 * 2, 384 * 2, mapTexture);
 
-    Obstacle rock1(0, 0, 32, 32, 300, 300, 32 * 4, 32 * 4, rock1Texture);
     Obstacle rock2(0, 0, 37, 33, 800, 200, 37 * 3.5, 33 * 3.5, rock2Texture);
     Obstacle rock3(0, 0, 25, 26, 700, 550, 25 * 4, 26 * 4, rock3Texture);
-    Obstacle tree1(0, 0, 62, 57, 450, 450, 62 * 3, 57 * 3, treeTexture);
 
     vector<Entity> ObstaclesLower;
     ObstaclesLower.clear();
-    ObstaclesLower.push_back(rock1.getLowerHalf());
     ObstaclesLower.push_back(rock2.getLowerHalf());
     ObstaclesLower.push_back(rock3.getLowerHalf());
-    ObstaclesLower.push_back(tree1.getLowerHalf());
 
     vector<Entity> ObstaclesUpper;
     ObstaclesUpper.clear();
-    ObstaclesUpper.push_back(rock1.getUpperHalf());
     ObstaclesUpper.push_back(rock2.getUpperHalf());
     ObstaclesUpper.push_back(rock3.getUpperHalf());
-    ObstaclesUpper.push_back(tree1.getUpperHalf());
 
     Player mainCharacter(26, 80, 12, 32, 300, 500, 12 * 2, 32 * 2, playerTexture);
 
     bool gameRunning = true;
 
     SDL_Event event;
-
 
     while (gameRunning)
     {
@@ -67,22 +58,26 @@ int main(int argc, char* args [])
 
         while (SDL_PollEvent(&event))
         {
-            if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) || (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE))
+            if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE))
                 gameRunning = false;
             else if (event.type == SDL_WINDOWEVENT)
             {
                 switch (event.window.event)
                 {
+                        case SDL_WINDOWEVENT_CLOSE:
+                            gameRunning = false;
+                            break;
+
                         case SDL_WINDOWEVENT_FOCUS_LOST:
                             pauseGame = true;
                             break;
 
-                        case SDL_WINDOWEVENT_FOCUS_GAINED:
-                            pauseGame = false;
-                            break;
-
                         case SDL_WINDOWEVENT_MOVED:
                             pauseGame = true;
+                        break;
+
+                        case SDL_WINDOWEVENT_FOCUS_GAINED:
+                            pauseGame = false;
                             break;
                 }
             }
@@ -93,10 +88,8 @@ int main(int argc, char* args [])
 
         window.init();
 
-        float Perf = SDL_GetPerformanceFrequency();
-        if (Perf == 0)
-            Perf = 1;
-        float currentFrameTime = SDL_GetPerformanceCounter() / Perf * 1000.0f;
+
+        float currentFrameTime = SDL_GetPerformanceCounter() / (float)SDL_GetPerformanceFrequency() * 1000.0f;
 
         mainCharacter.updateMovement(ObstaclesLower, ObstaclesUpper, map, currentFrameTime);
 
@@ -113,10 +106,7 @@ int main(int argc, char* args [])
 
         Uint32 endTime = SDL_GetPerformanceCounter();
 
-        Perf = SDL_GetPerformanceFrequency();
-        if (Perf == 0)
-            Perf = 1;
-        float elapsedTime = (endTime - startTime) / Perf * 1000.0f;
+        float elapsedTime = (endTime - startTime) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
 
         SDL_Delay(floor(16.666f - elapsedTime));
     }
