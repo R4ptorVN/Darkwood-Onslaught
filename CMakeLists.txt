@@ -14,7 +14,9 @@ add_executable(${PROJECT_NAME} scripts/main.cpp
         scripts/Functions.cpp
         scripts/Functions.hpp
         scripts/Obstacle.hpp
-        scripts/Obstacle.cpp)
+        scripts/Obstacle.cpp
+        scripts/Map.cpp
+        scripts/Map.hpp)
 
 # --- SDL2 SETUP ---
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)

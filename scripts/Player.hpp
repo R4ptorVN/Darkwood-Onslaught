@@ -14,8 +14,8 @@ class Player: public Entity
         SDL_Rect getChestFrame();
         void moveCharacter();
         void updateFrame(float x, float y);
-        void updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &ObstaclesUpper, Entity &map, float currentFrameTime);
-        bool outOfMap(Entity &map);
+        void updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &ObstaclesUpper, float currentFrameTime);
+        bool outOfMap();
 
     private:
 

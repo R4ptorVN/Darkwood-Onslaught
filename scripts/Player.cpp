@@ -89,16 +89,15 @@ void Player::updateFrame(float x, float y)
     setSrcY(y);
 }
 
-bool Player::outOfMap(Entity &map)
+bool Player::outOfMap()
 {
      SDL_Rect dest = getDestFrame();
-     SDL_Rect mapBounds = map.getDestFrame();
-     if (dest.x < mapBounds.x || dest.y < mapBounds.y || dest.x + dest.w > mapBounds.w || dest.y + dest.h > mapBounds.h)
+     if (dest.x < 0 || dest.y < 0 || dest.x + dest.w > LEVEL_WIDTH || dest.y + dest.h > LEVEL_HEIGHT)
          return true;
     return false;
 }
 
-void Player::updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &ObstaclesUpper, Entity &map, float currentFrameTime)
+void Player::updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &ObstaclesUpper, float currentFrameTime)
 {
     const Uint8* keyState = SDL_GetKeyboardState(NULL);
 
@@ -185,7 +184,7 @@ void Player::updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &Obst
 
     moveCharacter();
 
-    if (checkCollision(getLegFrame(), ObstaclesLower) || checkCollision(getChestFrame(), ObstaclesUpper) || outOfMap(map))
+    if (checkCollision(getLegFrame(), ObstaclesLower) || checkCollision(getChestFrame(), ObstaclesUpper) || outOfMap())
     {
             setDesX(prev_desX);
             setDesY(prev_desY);
