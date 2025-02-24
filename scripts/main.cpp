@@ -4,12 +4,12 @@
 
 using namespace std;
 
-#include "RenderWindow.hpp"
-#include "Entity.hpp"
-#include "Player.hpp"
-#include "Functions.hpp"
-#include "Obstacle.hpp"
-#include "Map.hpp"
+#include "lib/RenderWindow.hpp"
+#include "lib/Entity.hpp"
+#include "lib/Player.hpp"
+#include "lib/Functions.hpp"
+#include "lib/Obstacle.hpp"
+#include "lib/Map.hpp"
 
 int main(int argc, char* args [])
 {
@@ -90,9 +90,9 @@ int main(int argc, char* args [])
         map.renderLayer(window, camera, 0);
         map.renderLayer(window, camera, 1);
 
-        map.renderObjectsBack(window, camera, mainCharacter);
+        map.renderObjectsBack(window, camera, mainCharacter, currentFrameTime);
         window.renderPlayer(mainCharacter, camera);
-        map.renderObjectsFront(window, camera, mainCharacter);
+        map.renderObjectsFront(window, camera, mainCharacter, currentFrameTime);
 
         window.display();
 

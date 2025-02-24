@@ -2,8 +2,8 @@
 
 using namespace std;
 
-#include "Player.hpp"
-#include "Functions.hpp"
+#include "lib/Player.hpp"
+#include "lib/Functions.hpp"
 
 const int idleFrames = 12;
 const int walkingFrames = 8;
@@ -28,12 +28,9 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
 
     lastFrameTime = 0;
 
-    float tmpX = 26;
-    for (int i = 0; i < 20; i++)
-    {
-        srcXFrames[i] = tmpX;
-        tmpX += frameDistance;
-    }
+    srcXFrames[0] = 26;
+    for (int i = 1; i < 20; i++)
+        srcXFrames[i] = srcXFrames[i - 1] + frameDistance;
 
     srcYIdleFrames[0] = 80;
     srcYIdleFrames[1] = 464;
@@ -121,6 +118,7 @@ void Player::updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &Obst
             frame++;
             if (frame == attackingFrames)
                 attacking = false;
+
             lastFrameTime = currentFrameTime;
         }
         return;
@@ -159,6 +157,7 @@ void Player::updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &Obst
             frame++;
             if (frame == walkingFrames)
                 frame = 0;
+
             lastFrameTime = currentFrameTime;
         }
         updateFrame(srcXFrames[frame], srcYWalkingFrames[movingDirection]);

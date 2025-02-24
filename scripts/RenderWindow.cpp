@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "functions.hpp"
+#include "lib/Functions.hpp"
 
 using namespace std;
 
-#include "RenderWindow.hpp"
-#include "Entity.hpp"
+#include "lib/RenderWindow.hpp"
+#include "lib/Entity.hpp"
 
 RenderWindow::RenderWindow(const char* p_title)
 :window(NULL), renderer(NULL)

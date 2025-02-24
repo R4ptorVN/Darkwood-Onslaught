@@ -2,7 +2,7 @@
 
 using namespace std;
 
-#include "Entity.hpp"
+#include "lib/Entity.hpp"
 
 Entity::Entity(){}
 

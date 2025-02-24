@@ -6,17 +6,17 @@ set(CMAKE_CXX_STANDARD 14)
 # Must set the path to the main.cpp, for example: scripts/main.cpp if it is inside a folder
 add_executable(${PROJECT_NAME} scripts/main.cpp
         scripts/RenderWindow.cpp
-        scripts/RenderWindow.hpp
-        scripts/Entity.hpp
+        scripts/lib/RenderWindow.hpp
+        scripts/lib/Entity.hpp
         scripts/Entity.cpp
         scripts/Player.cpp
-        scripts/Player.hpp
+        scripts/lib/Player.hpp
         scripts/Functions.cpp
-        scripts/Functions.hpp
-        scripts/Obstacle.hpp
+        scripts/lib/Functions.hpp
+        scripts/lib/Obstacle.hpp
         scripts/Obstacle.cpp
         scripts/Map.cpp
-        scripts/Map.hpp)
+        scripts/lib/Map.hpp)
 
 # --- SDL2 SETUP ---
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)

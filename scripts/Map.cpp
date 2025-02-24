@@ -1,10 +1,11 @@
-#include "Map.hpp"
-#include "Obstacle.hpp"
+#include "lib/Map.hpp"
+#include "lib/Obstacle.hpp"
 
 using namespace std;
 
 Map::Map(RenderWindow &window)
 {
+        SDL_Texture *Layer[4];
         Layer[0] = window.loadTexture("resources/mapLayer1.png");
         Layer[1] = window.loadTexture("resources/mapLayer2.png");
         Layer[2] = window.loadTexture("resources/mapLayer3.png");
@@ -21,7 +22,7 @@ Map::Map(RenderWindow &window)
         }
 
         //(69, 123, 19, 1) -> (38, 27, 80, 100);
-        //(246, 60, 19, 1) -> (22, 0, 70, 93);
+        //(246, 90, 19, 1) -> (22, 0, 70, 93);
         //(166, 187, 18, 1) -> (133, 85, 88, 107);
         //(470, 219, 18, 1) -> (443, 125, 69, 99)
         //(310, 346, 19, 1) -> (276, 244, 87, 106);
@@ -35,7 +36,7 @@ Map::Map(RenderWindow &window)
 
         obstacleHitBox.clear();
         obstacleHitBox.push_back(Obstacle(69, 123, 19, 1, Layer[2]));
-        obstacleHitBox.push_back(Obstacle(246, 60, 19, 1, Layer[2]));
+        obstacleHitBox.push_back(Obstacle(246, 90, 19, 1, Layer[2]));
         obstacleHitBox.push_back(Obstacle(166, 187, 18, 1, Layer[2]));
         obstacleHitBox.push_back(Obstacle(470, 219, 18, 1, Layer[2]));
         obstacleHitBox.push_back(Obstacle(310, 346, 19, 1, Layer[2]));
@@ -49,7 +50,7 @@ Map::Map(RenderWindow &window)
 
         obstacleDisplay.clear();
         obstacleDisplay.push_back(Obstacle(38, 27, 80, 100, Layer[2]));
-        obstacleDisplay.push_back(Obstacle(22, 0, 70, 93, Layer[2]));
+        obstacleDisplay.push_back(Obstacle(220, 0, 70, 93, Layer[2]));
         obstacleDisplay.push_back(Obstacle(133, 85, 88, 107, Layer[2]));
         obstacleDisplay.push_back(Obstacle(443, 125, 69, 99, Layer[2]));
         obstacleDisplay.push_back(Obstacle(276, 244, 87, 106, Layer[2]));
@@ -61,11 +62,20 @@ Map::Map(RenderWindow &window)
         obstacleDisplay.push_back(Obstacle(368, 96, 16, 16, Layer[2]));
         obstacleDisplay.push_back(Obstacle(401, 97, 14, 15, Layer[2]));
 
+        SDL_Texture *FireTex = window.loadTexture("resources/Fire.png");
+
+        Fire.setTex(FireTex); Fire.setFlip(SDL_FLIP_NONE);
+        Fire.setSrcX(0); Fire.setSrcY(0); Fire.setSrcW(16); Fire.setSrcH(23);
+        Fire.setDesX(256 * 2); Fire.setDesY(208 * 2); Fire.setDesW(16 * 2); Fire.setDesH(23 * 2);
 
 
-
+        float tmpX = 0;
+        for (int i = 1; i < 8; i++)
+              srcXFire[i] = srcXFire[i - 1] + 16;
 
         fireFrame = 0;
+
+        lastFrameTime = 0;
 }
 
 vector<Entity>& Map::getHitBoxes()
@@ -78,20 +88,50 @@ void Map::renderLayer(RenderWindow &window, SDL_Rect &camera, int Layer)
         window.render(mapLayer[Layer], camera);
 }
 
-void Map::renderObjectsBack(RenderWindow &window, SDL_Rect &camera, Player &player)
+void Map::renderObjectsBack(RenderWindow &window, SDL_Rect &camera, Player &player, float currentFrameTime)
 {
         for (int i = 0; i < int(obstacleHitBox.size()); i++)
         {
                 if (player.getLegFrame().y > obstacleHitBox[i].getDesY())
                         window.render(obstacleDisplay[i], camera);
         }
+
+        if (player.getLegFrame().y > Fire.getDesY() + Fire.getDesH())
+        {
+                if (currentFrameTime - lastFrameTime > 100)
+                {
+                        fireFrame++;
+                        if (fireFrame == 8)
+                                fireFrame = 0;
+                        Fire.setSrcX(srcXFire[fireFrame]);
+
+                        lastFrameTime = currentFrameTime;
+                }
+
+                window.render(Fire, camera);
+        }
 }
 
-void Map::renderObjectsFront(RenderWindow &window, SDL_Rect &camera, Player &player)
+void Map::renderObjectsFront(RenderWindow &window, SDL_Rect &camera, Player &player, float currentFrameTime)
 {
         for (int i = 0; i < int(obstacleHitBox.size()); i++)
         {
                 if (player.getLegFrame().y <= obstacleHitBox[i].getDesY())
                         window.render(obstacleDisplay[i], camera);
+        }
+
+        if (player.getLegFrame().y <= Fire.getDesY() + Fire.getDesH())
+        {
+                if (currentFrameTime - lastFrameTime > 100)
+                {
+                        fireFrame++;
+                        if (fireFrame == 8)
+                                fireFrame = 0;
+                        Fire.setSrcX(srcXFire[fireFrame]);
+
+                        lastFrameTime = currentFrameTime;
+                }
+
+                window.render(Fire, camera);
         }
 }

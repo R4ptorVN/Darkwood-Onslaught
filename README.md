@@ -5,7 +5,11 @@ Configured to work for CLion 24.3.
 
 Notes for myself:
 
--REMAKE MAP
+-ADD ROCKS
+
+-ADD additional bugged tree
+
+-FIX ATTACKING ANIMATION COLLISION  BUG
 
 -ADD MONSTERS
 
@@ -13,7 +17,5 @@ Notes for myself:
 
 -ADD PLAYER HUD
 
--Fix obstacles collision box
 
--Fix window crashing error (somehow).
 
