@@ -1,4 +1,5 @@
 #include "Map.hpp"
+#include "Obstacle.hpp"
 
 using namespace std;
 
@@ -19,11 +20,78 @@ Map::Map(RenderWindow &window)
                 mapLayer[i].setDesW(512 * 2); mapLayer[i].setDesH(384 * 2);
         }
 
+        //(69, 123, 19, 1) -> (38, 27, 80, 100);
+        //(246, 60, 19, 1) -> (22, 0, 70, 93);
+        //(166, 187, 18, 1) -> (133, 85, 88, 107);
+        //(470, 219, 18, 1) -> (443, 125, 69, 99)
+        //(310, 346, 19, 1) -> (276, 244, 87, 106);
+        //(38, 266, 19, 1) -> (7, 169, 79, 101);
+        //(256, 234, 15, 1) -> (256, 226, 16, 11);
+        //(336, 126, 16, 1) -> (336, 112, 16, 16);
+        //(356, 123, 7, 1) -> (355, 117, 9, 7)
+        //(352, 111, 16, 1) -> (352, 97, 16, 15);
+        //(368, 111, 16, 1) -> (368, 96, 16, 16);
+        //(401, 111, 14, 1) -> (401, 97, 14, 15);
+
+        obstacleHitBox.clear();
+        obstacleHitBox.push_back(Obstacle(69, 123, 19, 1, Layer[2]));
+        obstacleHitBox.push_back(Obstacle(246, 60, 19, 1, Layer[2]));
+        obstacleHitBox.push_back(Obstacle(166, 187, 18, 1, Layer[2]));
+        obstacleHitBox.push_back(Obstacle(470, 219, 18, 1, Layer[2]));
+        obstacleHitBox.push_back(Obstacle(310, 346, 19, 1, Layer[2]));
+        obstacleHitBox.push_back(Obstacle(38, 266, 19, 1, Layer[2]));
+        obstacleHitBox.push_back(Obstacle(256, 234, 15, 1, Layer[2]));
+        obstacleHitBox.push_back(Obstacle(336, 126, 16, 1, Layer[2]));
+        obstacleHitBox.push_back(Obstacle(356, 123, 7, 1, Layer[2]));
+        obstacleHitBox.push_back(Obstacle(352, 111, 16, 1, Layer[2]));
+        obstacleHitBox.push_back(Obstacle(368, 111, 16, 1, Layer[2]));
+        obstacleHitBox.push_back(Obstacle(401, 111, 14, 1, Layer[2]));
+
+        obstacleDisplay.clear();
+        obstacleDisplay.push_back(Obstacle(38, 27, 80, 100, Layer[2]));
+        obstacleDisplay.push_back(Obstacle(22, 0, 70, 93, Layer[2]));
+        obstacleDisplay.push_back(Obstacle(133, 85, 88, 107, Layer[2]));
+        obstacleDisplay.push_back(Obstacle(443, 125, 69, 99, Layer[2]));
+        obstacleDisplay.push_back(Obstacle(276, 244, 87, 106, Layer[2]));
+        obstacleDisplay.push_back(Obstacle(7, 169, 79, 101, Layer[2]));
+        obstacleDisplay.push_back(Obstacle(256, 226, 16, 11, Layer[2]));
+        obstacleDisplay.push_back(Obstacle(336, 112, 16, 16, Layer[2]));
+        obstacleDisplay.push_back(Obstacle(355, 117, 9, 7, Layer[2]));
+        obstacleDisplay.push_back(Obstacle(352, 97, 16, 15, Layer[2]));
+        obstacleDisplay.push_back(Obstacle(368, 96, 16, 16, Layer[2]));
+        obstacleDisplay.push_back(Obstacle(401, 97, 14, 15, Layer[2]));
+
+
+
+
+
         fireFrame = 0;
 }
 
-void Map::render(RenderWindow &window, SDL_Rect &camera)
+vector<Entity>& Map::getHitBoxes()
 {
-        for (int i = 0; i < 4; i++)
-                window.render(mapLayer[i], camera);
+        return obstacleHitBox;
+}
+
+void Map::renderLayer(RenderWindow &window, SDL_Rect &camera, int Layer)
+{
+        window.render(mapLayer[Layer], camera);
+}
+
+void Map::renderObjectsBack(RenderWindow &window, SDL_Rect &camera, Player &player)
+{
+        for (int i = 0; i < int(obstacleHitBox.size()); i++)
+        {
+                if (player.getLegFrame().y > obstacleHitBox[i].getDesY())
+                        window.render(obstacleDisplay[i], camera);
+        }
+}
+
+void Map::renderObjectsFront(RenderWindow &window, SDL_Rect &camera, Player &player)
+{
+        for (int i = 0; i < int(obstacleHitBox.size()); i++)
+        {
+                if (player.getLegFrame().y <= obstacleHitBox[i].getDesY())
+                        window.render(obstacleDisplay[i], camera);
+        }
 }

@@ -9,10 +9,8 @@ using namespace std;
 class Obstacle : public Entity
 {
     public:
-        Obstacle(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex);
-        Entity getUpperHalf();
-        Entity getLowerHalf();
+        Obstacle(float srcX, float srcY, float srcW, float srcH, SDL_Texture* tex);
+
     private:
-        Entity upperHalf;
-        Entity lowerHalf;
+
 };

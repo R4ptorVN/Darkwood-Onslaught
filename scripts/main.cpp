@@ -65,7 +65,7 @@ int main(int argc, char* args [])
 
                         case SDL_WINDOWEVENT_MOVED:
                             pauseGame = true;
-                        break;
+                            break;
 
                         case SDL_WINDOWEVENT_FOCUS_GAINED:
                             pauseGame = false;
@@ -82,13 +82,17 @@ int main(int argc, char* args [])
 
         float currentFrameTime = SDL_GetPerformanceCounter() / (float)SDL_GetPerformanceFrequency() * 1000.0f;
 
-        mainCharacter.updateMovement(ObstaclesLower, ObstaclesUpper, currentFrameTime);
+        mainCharacter.updateMovement(map.getHitBoxes(), ObstaclesUpper, currentFrameTime);
+
 
         updateCamera(camera, mainCharacter);
 
-        map.render(window, camera);
+        map.renderLayer(window, camera, 0);
+        map.renderLayer(window, camera, 1);
 
+        map.renderObjectsBack(window, camera, mainCharacter);
         window.renderPlayer(mainCharacter, camera);
+        map.renderObjectsFront(window, camera, mainCharacter);
 
         window.display();
 

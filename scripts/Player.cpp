@@ -56,20 +56,21 @@ SDL_Rect Player::getLegFrame()
 {
     SDL_Rect legFrame = getDestFrame();
 
-    legFrame.y += (legFrame.h / 1.5);
-    legFrame.h /= 1.5;
+    legFrame.y += (29 * 2);
+    legFrame.w = (12 * 2);
+    legFrame.h = (3 * 2);
 
     return legFrame;
 }
 
-SDL_Rect Player::getChestFrame()
-{
-    SDL_Rect chestFrame = getDestFrame();
-
-    chestFrame.h /= 3;
-
-    return chestFrame;
-}
+// SDL_Rect Player::getChestFrame()
+// {
+//     SDL_Rect chestFrame = getDestFrame();
+//
+//     chestFrame.h /= 3;
+//
+//     return chestFrame;
+// }
 
 void Player::moveCharacter()
 {
@@ -184,7 +185,7 @@ void Player::updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &Obst
 
     moveCharacter();
 
-    if (checkCollision(getLegFrame(), ObstaclesLower) || checkCollision(getChestFrame(), ObstaclesUpper) || outOfMap())
+    if (checkCollision(getLegFrame(), ObstaclesLower) || /*checkCollision(getChestFrame(), ObstaclesUpper) ||*/ outOfMap())
     {
             setDesX(prev_desX);
             setDesY(prev_desY);
