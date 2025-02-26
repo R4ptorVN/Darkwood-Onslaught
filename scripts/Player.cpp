@@ -15,7 +15,7 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
 :Entity(srcX, srcY, srcW, srcH, desX, desY, desW, desH, tex)
 {
 
-    movementSpeed = 3;
+    movementSpeed = 2.5;
 
     movingLeft = movingRight = movingUp = movingDown = false;
 
@@ -175,9 +175,9 @@ void Player::updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &Obst
     }
 
     if (movingDirections > 1)
-        movementSpeed = 1.8;
+        movementSpeed = 1.5;
     else
-        movementSpeed = 3;
+        movementSpeed = 2.5;
 
     float prev_desX = desX;
     float prev_desY = desY;
