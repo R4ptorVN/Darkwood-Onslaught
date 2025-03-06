@@ -2,6 +2,14 @@
 
 using namespace std;
 
+int Rand(int l, int r)
+{
+        return l + ((int)rand() * (RAND_MAX + 1) * (RAND_MAX + 1) * (RAND_MAX + 1) +
+                    (int)rand() * (RAND_MAX + 1) * (RAND_MAX + 1) +
+                    (int)rand() * (RAND_MAX + 1) +
+                    rand()) % (r - l + 1);
+}
+
 bool checkCollision(SDL_Rect a, vector<Entity> &Obstacles)
 {
         for (Entity &object : Obstacles)

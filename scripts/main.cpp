@@ -10,10 +10,12 @@ using namespace std;
 #include "lib/Functions.hpp"
 #include "lib/Obstacle.hpp"
 #include "lib/Map.hpp"
+#include "lib/Enemy.hpp"
+
+void buildEnemies(RenderWindow window);
 
 int main(int argc, char* args [])
 {
-
     if (SDL_Init(SDL_INIT_VIDEO))
         SDL_Log("Failed to initialize SDL2");
     if (!(IMG_Init(IMG_INIT_PNG)))
@@ -28,18 +30,15 @@ int main(int argc, char* args [])
 
     Map map(window);
 
-    vector<Entity> ObstaclesLower;
-    ObstaclesLower.clear();
+    setupEnemyTexture(window);
 
-    vector<Entity> ObstaclesUpper;
-    ObstaclesUpper.clear();
-
-
-    Player mainCharacter(26, 80, 12, 32, 300, 500, 12 * 2, 32 * 2, playerTexture);
+    Player mainCharacter(26, 109, 12, 3, 300, 500, 12 * 2, 3 * 2, playerTexture);
 
     bool gameRunning = true;
 
     SDL_Event event;
+
+    buildEnemies();
 
     while (gameRunning)
     {
@@ -82,17 +81,33 @@ int main(int argc, char* args [])
 
         float currentFrameTime = SDL_GetPerformanceCounter() / (float)SDL_GetPerformanceFrequency() * 1000.0f;
 
-        mainCharacter.updateMovement(map.getHitBoxes(), ObstaclesUpper, currentFrameTime);
+        mainCharacter.updatePlayerMovement(map.getHitBoxes(), currentFrameTime);
 
+        moveEnemies(mainCharacter, map.getHitBoxes(), currentFrameTime);
 
         updateCamera(camera, mainCharacter);
 
         map.renderLayer(window, camera, 0);
         map.renderLayer(window, camera, 1);
 
-        map.renderObjectsBack(window, camera, mainCharacter, currentFrameTime);
-        window.renderPlayer(mainCharacter, camera);
-        map.renderObjectsFront(window, camera, mainCharacter, currentFrameTime);
+        window.clearEntities();
+
+        vector<Entity> obstaclesHitBox = map.getHitBoxes();
+        vector<SDL_Rect> obstacleDisplay = map.getDisplayBoxesValues();
+
+        for (int i = 0; i < int(obstacleDisplay.size()); i++)
+             window.pushEntities(obstaclesHitBox[i], obstacleDisplay[i], 2);
+
+        window.pushEntities(map.getFire(currentFrameTime), makeRec(0, 0, 16, 29), 2);
+
+        window.pushEntities(mainCharacter, mainCharacter.getRenderBoxValues(), 2);
+
+        vector<Enemy> enemies = getEnemies();
+
+         for (int i = 0; i < int(enemies.size()); i++)
+             window.pushEntities(enemies[i], enemies[i].getHitBoxValues(), 1.25);
+
+        window.renderEntities(camera);
 
         window.display();
 

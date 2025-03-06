@@ -9,5 +9,6 @@ const int LEVEL_HEIGHT = 384 * 2;
 const int SCREEN_WIDTH = 512;
 const int SCREEN_HEIGHT = 384;
 
+int Rand(int l, int r);
 bool checkCollision(SDL_Rect a, vector<Entity> &Obstacles);
 void updateCamera(SDL_Rect &camera, Player &mainCharacter);

@@ -1,5 +1,4 @@
 #include "lib/Obstacle.hpp"
-#include "lib/Functions.hpp"
 
 using namespace std;
 

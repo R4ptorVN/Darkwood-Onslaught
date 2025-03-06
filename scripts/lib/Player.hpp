@@ -10,11 +10,11 @@ class Player: public Entity
 {
     public:
         Player(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex);
-        SDL_Rect getLegFrame();
-        SDL_Rect getChestFrame();
+        SDL_Rect getHitBox();
+        SDL_Rect getRenderBoxValues();
         void moveCharacter();
         void updateFrame(float x, float y);
-        void updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &ObstaclesUpper, float currentFrameTime);
+        void updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameTime);
         bool outOfMap();
 
     private:
@@ -34,6 +34,8 @@ class Player: public Entity
 
         int movingDirection;
         int movingDirections;
+
+        float healthPoints;
 
         float lastFrameTime;
 };

@@ -5,7 +5,6 @@ using namespace std;
 
 #include "Entity.hpp"
 
-
 class Obstacle : public Entity
 {
     public:

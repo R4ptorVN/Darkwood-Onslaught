@@ -17,6 +17,8 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
 
     movementSpeed = 2.5;
 
+    healthPoints = 100;
+
     movingLeft = movingRight = movingUp = movingDown = false;
 
     attacking = false;
@@ -32,42 +34,45 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
     for (int i = 1; i < 20; i++)
         srcXFrames[i] = srcXFrames[i - 1] + frameDistance;
 
-    srcYIdleFrames[0] = 80;
-    srcYIdleFrames[1] = 464;
-    srcYIdleFrames[2] = 848;
-    srcYIdleFrames[3] = 1232;
+    srcYIdleFrames[0] = 109;
+    srcYIdleFrames[1] = 493;
+    srcYIdleFrames[2] = 877;
+    srcYIdleFrames[3] = 1261;
 
-    srcYWalkingFrames[0] = 208;
-    srcYWalkingFrames[1] = 593;
-    srcYWalkingFrames[2] = 976;
-    srcYWalkingFrames[3] = 1360;
+    srcYWalkingFrames[0] = 237;
+    srcYWalkingFrames[1] = 622;
+    srcYWalkingFrames[2] = 1005;
+    srcYWalkingFrames[3] = 1389;
 
-    srcYAttackingFrames[0] = 336;
-    srcYAttackingFrames[1] = 720;
-    srcYAttackingFrames[2] = 1104;
-    srcYAttackingFrames[3] = 1488;
+    srcYAttackingFrames[0] = 365;
+    srcYAttackingFrames[1] = 749;
+    srcYAttackingFrames[2] = 1133;
+    srcYAttackingFrames[3] = 1517;
 
 }
 
-SDL_Rect Player::getLegFrame()
+SDL_Rect Player::getHitBox()
 {
-    SDL_Rect legFrame = getDestFrame();
+    SDL_Rect hitBox = getDestFrame();
 
-    legFrame.y += (29 * 2);
-    legFrame.w = (12 * 2);
-    legFrame.h = (3 * 2);
+    hitBox.y -= (29 * 2);
+    hitBox.h = (32 * 2);
 
-    return legFrame;
+    return hitBox;
 }
 
-// SDL_Rect Player::getChestFrame()
-// {
-//     SDL_Rect chestFrame = getDestFrame();
-//
-//     chestFrame.h /= 3;
-//
-//     return chestFrame;
-// }
+SDL_Rect Player::getRenderBoxValues()
+{
+    SDL_Rect renderBox;
+
+    renderBox.x = -26;
+    renderBox.y = -45;
+    renderBox.h = 64;
+    renderBox.w = 64;
+
+    return renderBox;
+}
+
 
 void Player::moveCharacter()
 {
@@ -95,7 +100,7 @@ bool Player::outOfMap()
     return false;
 }
 
-void Player::updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &ObstaclesUpper, float currentFrameTime)
+void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameTime)
 {
     const Uint8* keyState = SDL_GetKeyboardState(NULL);
 
@@ -103,6 +108,9 @@ void Player::updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &Obst
     movingRight = keyState[SDL_SCANCODE_D];
     movingUp = keyState[SDL_SCANCODE_W];
     movingDown = keyState[SDL_SCANCODE_S];
+
+    if (healthPoints < 100)
+        healthPoints += 0.01;
 
     if (keyState[SDL_SCANCODE_J] && !attacking)
     {
@@ -184,7 +192,7 @@ void Player::updateMovement(vector<Entity> &ObstaclesLower, vector<Entity> &Obst
 
     moveCharacter();
 
-    if (checkCollision(getLegFrame(), ObstaclesLower) || /*checkCollision(getChestFrame(), ObstaclesUpper) ||*/ outOfMap())
+    if (checkCollision(getDestFrame(), Obstacles) || outOfMap())
     {
             setDesX(prev_desX);
             setDesY(prev_desY);

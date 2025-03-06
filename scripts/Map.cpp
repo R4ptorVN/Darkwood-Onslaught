@@ -1,7 +1,18 @@
 #include "lib/Map.hpp"
-#include "lib/Obstacle.hpp"
 
 using namespace std;
+
+SDL_Rect makeRec(int x, int y, int w, int h)
+{
+        SDL_Rect rec;
+
+        rec.x = x;
+        rec.y = y;
+        rec.w = w;
+        rec.h = h;
+
+        return rec;
+}
 
 Map::Map(RenderWindow &window)
 {
@@ -47,9 +58,9 @@ Map::Map(RenderWindow &window)
         obstacleHitBox.push_back(Obstacle(336, 126, 16, 1, Layer[2]));
         obstacleHitBox.push_back(Obstacle(356, 123, 7, 1, Layer[2]));
         obstacleHitBox.push_back(Obstacle(352, 111, 16, 1, Layer[2]));
-        obstacleHitBox.push_back(Obstacle(368, 111, 16, 1, Layer[2]));
+        obstacleHitBox.push_back(Obstacle(368, 110, 16, 1, Layer[2]));
         obstacleHitBox.push_back(Obstacle(401, 111, 14, 1, Layer[2]));
-        obstacleHitBox.push_back(Obstacle(63, 335, 64, 1, Layer[2]));
+        obstacleHitBox.push_back(Obstacle(63, 334, 64, 1, Layer[2]));
         obstacleHitBox.push_back(Obstacle(112, 344, 16, 7, Layer[3]));
         obstacleHitBox.push_back(Obstacle(368, 111, 16, 1, Layer[3]));
         obstacleHitBox.push_back(Obstacle(389, 264, 4, 1, Layer[3]));
@@ -66,33 +77,39 @@ Map::Map(RenderWindow &window)
         //Display:
 
         obstacleDisplay.clear();
-        obstacleDisplay.push_back(Obstacle(38, 27, 80, 100, Layer[2]));
-        obstacleDisplay.push_back(Obstacle(220, 0, 70, 93, Layer[2]));
-        obstacleDisplay.push_back(Obstacle(133, 85, 88, 107, Layer[2]));
-        obstacleDisplay.push_back(Obstacle(443, 125, 69, 99, Layer[2]));
-        obstacleDisplay.push_back(Obstacle(276, 244, 87, 106, Layer[2]));
-        obstacleDisplay.push_back(Obstacle(7, 169, 79, 101, Layer[2]));
-        obstacleDisplay.push_back(Obstacle(256, 226, 16, 11, Layer[2]));
-        obstacleDisplay.push_back(Obstacle(336, 112, 16, 16, Layer[2]));
-        obstacleDisplay.push_back(Obstacle(355, 117, 9, 7, Layer[2]));
-        obstacleDisplay.push_back(Obstacle(352, 97, 16, 15, Layer[2]));
-        obstacleDisplay.push_back(Obstacle(368, 96, 16, 16, Layer[2]));
-        obstacleDisplay.push_back(Obstacle(401, 97, 14, 15, Layer[2]));
-        obstacleDisplay.push_back(Obstacle(62, 287, 66, 51, Layer[2]));
-        obstacleDisplay.push_back(Obstacle(112, 336, 16, 16, Layer[3]));
-        obstacleDisplay.push_back(Obstacle(368, 96, 16, 16, Layer[3]));
-        obstacleDisplay.push_back(Obstacle(384, 240, 16, 32, Layer[3]));
-        obstacleDisplay.push_back(Obstacle(64, 288, 48, 48, Layer[3]));
-        obstacleDisplay.push_back(Obstacle(96, 336, 16, 16, Layer[3]));
+        obstacleDisplay.push_back(makeRec(38, 27, 80, 100));
+        obstacleDisplay.push_back(makeRec(220, 0, 70, 93));
+        obstacleDisplay.push_back(makeRec(133, 85, 88, 107));
+        obstacleDisplay.push_back(makeRec(443, 125, 69, 99));
+        obstacleDisplay.push_back(makeRec(276, 244, 87, 106));
+        obstacleDisplay.push_back(makeRec(7, 169, 79, 101));
+        obstacleDisplay.push_back(makeRec(256, 226, 16, 11));
+        obstacleDisplay.push_back(makeRec(336, 112, 16, 16));
+        obstacleDisplay.push_back(makeRec(355, 117, 9, 7));
+        obstacleDisplay.push_back(makeRec(352, 97, 16, 15));
+        obstacleDisplay.push_back(makeRec(368, 96, 16, 16));
+        obstacleDisplay.push_back(makeRec(401, 97, 14, 15));
+        obstacleDisplay.push_back(makeRec(62, 287, 66, 51));
+        obstacleDisplay.push_back(makeRec(112, 336, 16, 16));
+        obstacleDisplay.push_back(makeRec(368, 96, 16, 16));
+        obstacleDisplay.push_back(makeRec(384, 240, 16, 32));
+        obstacleDisplay.push_back(makeRec(64, 288, 48, 48));
+        obstacleDisplay.push_back(makeRec(96, 336, 16, 16));
+
+        for (int i = 0; i < int(obstacleDisplay.size()); i++)
+        {
+                obstacleDisplay[i].x -= obstacleHitBox[i].getSrcX();
+                obstacleDisplay[i].y -= obstacleHitBox[i].getSrcY();
+        }
 
         SDL_Texture *FireTex = window.loadTexture("resources/Fire.png");
 
         Fire.setTex(FireTex); Fire.setFlip(SDL_FLIP_NONE);
-        Fire.setSrcX(0); Fire.setSrcY(0); Fire.setSrcW(16); Fire.setSrcH(23);
-        Fire.setDesX(256 * 2); Fire.setDesY(208 * 2); Fire.setDesW(16 * 2); Fire.setDesH(23 * 2);
+        Fire.setSrcX(0); Fire.setSrcY(0); Fire.setSrcW(16); Fire.setSrcH(29);
+        Fire.setDesX(256 * 2); Fire.setDesY(208 * 2); Fire.setDesW(16 * 2); Fire.setDesH(29 * 2);
 
 
-        float tmpX = 0;
+        srcXFire[0] = 0;
         for (int i = 1; i < 8; i++)
               srcXFire[i] = srcXFire[i - 1] + 16;
 
@@ -101,60 +118,32 @@ Map::Map(RenderWindow &window)
         lastFrameTime = 0;
 }
 
+Entity& Map::getFire(float currentFrameTime)
+{
+        if (currentFrameTime - lastFrameTime > 100)
+        {
+                fireFrame++;
+                if (fireFrame == 8)
+                        fireFrame = 0;
+
+                Fire.setSrcX(srcXFire[fireFrame]);
+
+                lastFrameTime = currentFrameTime;
+        }
+        return Fire;
+}
+
 vector<Entity>& Map::getHitBoxes()
 {
         return obstacleHitBox;
 }
 
+vector<SDL_Rect>& Map::getDisplayBoxesValues()
+{
+        return obstacleDisplay;
+}
+
 void Map::renderLayer(RenderWindow &window, SDL_Rect &camera, int Layer)
 {
         window.render(mapLayer[Layer], camera);
-}
-
-void Map::renderObjectsBack(RenderWindow &window, SDL_Rect &camera, Player &player, float currentFrameTime)
-{
-        for (int i = 0; i < int(obstacleDisplay.size()); i++)
-        {
-                if (player.getLegFrame().y > obstacleHitBox[i].getDesY())
-                        window.render(obstacleDisplay[i], camera);
-        }
-
-        if (player.getLegFrame().y > Fire.getDesY() + Fire.getDesH())
-        {
-                if (currentFrameTime - lastFrameTime > 100)
-                {
-                        fireFrame++;
-                        if (fireFrame == 8)
-                                fireFrame = 0;
-                        Fire.setSrcX(srcXFire[fireFrame]);
-
-                        lastFrameTime = currentFrameTime;
-                }
-
-                window.render(Fire, camera);
-        }
-}
-
-void Map::renderObjectsFront(RenderWindow &window, SDL_Rect &camera, Player &player, float currentFrameTime)
-{
-        for (int i = 0; i < int(obstacleDisplay.size()); i++)
-        {
-                if (player.getLegFrame().y <= obstacleHitBox[i].getDesY())
-                        window.render(obstacleDisplay[i], camera);
-        }
-
-        if (player.getLegFrame().y <= Fire.getDesY() + Fire.getDesH())
-        {
-                if (currentFrameTime - lastFrameTime > 100)
-                {
-                        fireFrame++;
-                        if (fireFrame == 8)
-                                fireFrame = 0;
-                        Fire.setSrcX(srcXFire[fireFrame]);
-
-                        lastFrameTime = currentFrameTime;
-                }
-
-                window.render(Fire, camera);
-        }
 }

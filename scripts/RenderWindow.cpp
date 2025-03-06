@@ -5,17 +5,18 @@
 using namespace std;
 
 #include "lib/RenderWindow.hpp"
-#include "lib/Entity.hpp"
 
 RenderWindow::RenderWindow(const char* p_title)
 :window(NULL), renderer(NULL)
 {
-  window = SDL_CreateWindow(p_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, LEVEL_WIDTH, LEVEL_HEIGHT, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow(p_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, LEVEL_WIDTH, LEVEL_HEIGHT, SDL_WINDOW_SHOWN);
 
-  if (window == NULL)
-      SDL_Log("Window failed to initialize");
+    if (window == NULL)
+        SDL_Log("Window failed to initialize");
 
-  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    Entities.clear();
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 }
 
 SDL_Texture* RenderWindow::loadTexture(const char* p_filePath)
@@ -50,25 +51,48 @@ void RenderWindow::render(Entity& p_entity, SDL_Rect &camera)
     SDL_RenderCopyEx(renderer, p_entity.getTex(), &src, &dest, 0, NULL, p_entity.getFlip());
 }
 
-void RenderWindow::renderPlayer(Entity &p_entity, SDL_Rect &camera)
+void RenderWindow::clearEntities()
 {
-    SDL_Rect src = p_entity.getSrcFrame();
-    SDL_Rect dest = p_entity.getDestFrame();
+    Entities.clear();
+}
+
+void RenderWindow::pushEntities(Entity& HitBox, SDL_Rect Values, float multiplier)
+{
+    Entities.push_back({{HitBox, Values}, multiplier});
+}
+
+bool compare(pair<pair<Entity, SDL_Rect>, float> x, pair<pair<Entity, SDL_Rect>, float> y)
+{
+    return(x.first.first.getDesY() + x.first.first.getDesH() < y.first.first.getDesY() + y.first.first.getDesH());
+}
+
+void RenderWindow::renderEntity(Entity& HitBox, SDL_Rect Values, float multiplier, SDL_Rect& camera)
+{
+    SDL_Rect src = HitBox.getSrcFrame();
+    SDL_Rect dest = HitBox.getDestFrame();
 
     dest.x -= camera.x;
     dest.y -= camera.y;
 
-    src.x -= 26;
-    src.y -= 16;
-    src.w += 52;
-    src.h += 32;
+    src.x += Values.x;
+    src.y += Values.y;
+    src.w = Values.w;
+    src.h = Values.h;
 
-    dest.x -= (26 * 2);
-    dest.y -= (16 * 2);
-    dest.w += (52 * 2);
-    dest.h += (32 * 2);
+    dest.x += (Values.x * multiplier);
+    dest.y += (Values.y * multiplier);
+    dest.w = (Values.w * multiplier);
+    dest.h = (Values.h * multiplier);
 
-    SDL_RenderCopyEx(renderer, p_entity.getTex(), &src, &dest, 0, NULL, p_entity.getFlip());
+    SDL_RenderCopyEx(renderer, HitBox.getTex(), &src, &dest, 0, NULL, HitBox.getFlip());
+}
+
+void RenderWindow::renderEntities(SDL_Rect &camera)
+{
+    sort(Entities.begin(), Entities.end(), compare);
+
+    for (int i = 0; i < int(Entities.size()); i++)
+        renderEntity(Entities[i].first.first, Entities[i].first.second, Entities[i].second, camera);
 }
 
 void RenderWindow::display()
