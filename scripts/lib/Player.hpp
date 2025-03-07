@@ -10,11 +10,14 @@ class Player: public Entity
 {
     public:
         Player(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex);
+        float getHealthPoints();
+        void setHealthPoints(float x);
+        bool checkDeath();
         SDL_Rect getHitBox();
         SDL_Rect getRenderBoxValues();
         void moveCharacter();
         void updateFrame(float x, float y);
-        void updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameTime);
+        void updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameTime, bool &gameRunning);
         bool outOfMap();
 
     private:
@@ -24,13 +27,15 @@ class Player: public Entity
 
         int frame;
 
+        int frameDuration;
+
+        int state;
+
         float srcXFrames[20];
 
-        float srcYIdleFrames[4];
+        float srcYFrames[4][4];
 
-        float srcYWalkingFrames[4];
-
-        float srcYAttackingFrames[4];
+        int maxFrames[4];
 
         int movingDirection;
         int movingDirections;

@@ -40,8 +40,7 @@ int main(int argc, char* args [])
 
     buildEnemies();
 
-    while (gameRunning)
-    {
+    while (gameRunning) {
         Uint32 startTime = SDL_GetPerformanceCounter();
 
         bool pauseGame = false;
@@ -54,21 +53,21 @@ int main(int argc, char* args [])
             {
                 switch (event.window.event)
                 {
-                        case SDL_WINDOWEVENT_CLOSE:
-                            gameRunning = false;
-                            break;
+                    case SDL_WINDOWEVENT_CLOSE:
+                        gameRunning = false;
+                    break;
 
-                        case SDL_WINDOWEVENT_FOCUS_LOST:
-                            pauseGame = true;
-                            break;
+                    case SDL_WINDOWEVENT_FOCUS_LOST:
+                        pauseGame = true;
+                    break;
 
-                        case SDL_WINDOWEVENT_MOVED:
-                            pauseGame = true;
-                            break;
+                    case SDL_WINDOWEVENT_MOVED:
+                        pauseGame = true;
+                    break;
 
-                        case SDL_WINDOWEVENT_FOCUS_GAINED:
-                            pauseGame = false;
-                            break;
+                    case SDL_WINDOWEVENT_FOCUS_GAINED:
+                        pauseGame = false;
+                    break;
                 }
             }
         }
@@ -81,7 +80,7 @@ int main(int argc, char* args [])
 
         float currentFrameTime = SDL_GetPerformanceCounter() / (float)SDL_GetPerformanceFrequency() * 1000.0f;
 
-        mainCharacter.updatePlayerMovement(map.getHitBoxes(), currentFrameTime);
+        mainCharacter.updatePlayerMovement(map.getHitBoxes(), currentFrameTime, gameRunning);
 
         moveEnemies(mainCharacter, map.getHitBoxes(), currentFrameTime);
 
@@ -91,6 +90,8 @@ int main(int argc, char* args [])
         map.renderLayer(window, camera, 1);
 
         window.clearEntities();
+
+        cout<<mainCharacter.getHealthPoints()<<endl;
 
         vector<Entity> obstaclesHitBox = map.getHitBoxes();
         vector<SDL_Rect> obstacleDisplay = map.getDisplayBoxesValues();
@@ -105,7 +106,7 @@ int main(int argc, char* args [])
         vector<Enemy> enemies = getEnemies();
 
          for (int i = 0; i < int(enemies.size()); i++)
-             window.pushEntities(enemies[i], enemies[i].getHitBoxValues(), 1.25);
+             window.pushEntities(enemies[i], enemies[i].getRenderBoxValues(), 1.25);
 
         window.renderEntities(camera);
 

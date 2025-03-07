@@ -45,17 +45,30 @@ vector<Enemy> getEnemies()
 	return Enemies;
 }
 
-SDL_Rect Enemy::getHitBoxValues()
+SDL_Rect Enemy::getRenderBoxValues()
 {
-	SDL_Rect hitBox;
+	SDL_Rect renderBox;
 
-	hitBox.x = -16;
-	hitBox.y = -40;
-	hitBox.w = 64;
-	hitBox.h = 48;
+	renderBox.x = -16;
+	renderBox.y = -40;
+	renderBox.w = 64;
+	renderBox.h = 48;
+
+	return renderBox;
+}
+
+SDL_Rect Enemy::getHitBox()
+{
+	SDL_Rect hitBox = getDestFrame();
+
+	hitBox.x += (12 * 1.25);
+	hitBox.y -= (35 * 1.25);
+	hitBox.w = (15 * 1.25);
+	hitBox.h = (29 * 1.25);
 
 	return hitBox;
 }
+
 
 float targetX = 0, targetY = 0;
 void Enemy::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFrameTime)
@@ -107,6 +120,16 @@ void Enemy::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFr
 	{
 		setDesX(prev_X);
 		setDesY(prev_Y);
+	}
+
+	SDL_Rect a = getHitBox();
+	SDL_Rect b = player.getHitBox();
+
+	if (SDL_HasIntersection(&a, &b))
+	{
+		float health = player.getHealthPoints();
+		health -= 0.75;
+		player.setHealthPoints(health);
 	}
 }
 

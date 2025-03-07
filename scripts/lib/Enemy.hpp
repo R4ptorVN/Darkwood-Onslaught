@@ -11,7 +11,8 @@ class Enemy : public Entity
     public:
         Enemy(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex);
         void moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFrameTime);
-        SDL_Rect getHitBoxValues();
+        SDL_Rect getRenderBoxValues();
+        SDL_Rect getHitBox();
 
 
      private:
