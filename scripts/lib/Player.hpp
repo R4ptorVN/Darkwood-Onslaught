@@ -13,6 +13,7 @@ class Player: public Entity
         float getHealthPoints();
         void setHealthPoints(float x);
         bool checkDeath();
+        SDL_Rect getHealthBar();
         SDL_Rect getHitBox();
         SDL_Rect getRenderBoxValues();
         void moveCharacter();
@@ -42,5 +43,8 @@ class Player: public Entity
 
         float healthPoints;
 
+        SDL_Rect healthBar;
+
         float lastFrameTime;
+
 };

@@ -30,7 +30,7 @@ void updateCamera(SDL_Rect &camera, Player &mainCharacter)
 
         if (camera.x < 0) camera.x = 0;
         if (camera.y < 0) camera.y = 0;
-        if (camera.x > LEVEL_WIDTH - camera.w) camera.x = LEVEL_WIDTH - camera.w;
-        if (camera.y > LEVEL_HEIGHT - camera.h) camera.y = LEVEL_HEIGHT - camera.h;
+        if (camera.x > LEVEL_WIDTH - SCREEN_WIDTH) camera.x = LEVEL_WIDTH - SCREEN_WIDTH;
+        if (camera.y > LEVEL_HEIGHT - SCREEN_HEIGHT) camera.y = LEVEL_HEIGHT - SCREEN_HEIGHT;
 }
 

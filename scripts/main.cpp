@@ -32,6 +32,8 @@ int main(int argc, char* args [])
 
     setupEnemyTexture(window);
 
+    window.setUpHealthBar();
+
     Player mainCharacter(26, 109, 12, 3, 300, 500, 12 * 2, 3 * 2, playerTexture);
 
     bool gameRunning = true;
@@ -40,7 +42,8 @@ int main(int argc, char* args [])
 
     buildEnemies();
 
-    while (gameRunning) {
+    while (gameRunning)
+    {
         Uint32 startTime = SDL_GetPerformanceCounter();
 
         bool pauseGame = false;
@@ -91,8 +94,6 @@ int main(int argc, char* args [])
 
         window.clearEntities();
 
-        cout<<mainCharacter.getHealthPoints()<<endl;
-
         vector<Entity> obstaclesHitBox = map.getHitBoxes();
         vector<SDL_Rect> obstacleDisplay = map.getDisplayBoxesValues();
 
@@ -109,6 +110,9 @@ int main(int argc, char* args [])
              window.pushEntities(enemies[i], enemies[i].getRenderBoxValues(), 1.25);
 
         window.renderEntities(camera);
+
+        SDL_Rect healthBar = mainCharacter.getHealthBar();
+        window.renderHealthBar(healthBar, camera);
 
         window.display();
 

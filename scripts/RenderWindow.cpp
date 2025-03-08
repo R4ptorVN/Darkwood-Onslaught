@@ -30,6 +30,14 @@ SDL_Texture* RenderWindow::loadTexture(const char* p_filePath)
     return texture;
 }
 
+SDL_Texture* healthBarFrame;
+SDL_Texture* heartIcon;
+void RenderWindow::setUpHealthBar()
+{
+     healthBarFrame = loadTexture("resources/Bar.png");
+     heartIcon = loadTexture("resources/Heart.png");
+}
+
 void RenderWindow::init()
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -95,6 +103,33 @@ void RenderWindow::renderEntities(SDL_Rect &camera)
         renderEntity(Entities[i].first.first, Entities[i].first.second, Entities[i].second, camera);
 }
 
+void RenderWindow::renderHealthBar(SDL_Rect &healthBar, SDL_Rect &camera)
+{
+    healthBar.x = 30; healthBar.y = SCREEN_HEIGHT - 30;
+
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 1);
+    SDL_RenderFillRect(renderer, &healthBar);
+    SDL_RenderDrawRect(renderer, &healthBar);
+
+    SDL_Rect srcFrame;
+    srcFrame.x = 0; srcFrame.y = 0;
+    srcFrame.w = 52; srcFrame.h = 9;
+
+    SDL_Rect destFrame;
+    destFrame.x = 30; destFrame.y = SCREEN_HEIGHT - 30;
+    destFrame.w = 100; destFrame.h = 14;
+
+    SDL_RenderCopyEx(renderer, healthBarFrame, &srcFrame, &destFrame, 0, NULL, SDL_FLIP_NONE);
+
+    srcFrame.x = 0; srcFrame.y = 0;
+    srcFrame.w = 13; srcFrame.h = 12;
+
+    destFrame.x = 12; destFrame.y = SCREEN_HEIGHT - 35;
+    destFrame.w = 26; destFrame.h = 24;
+
+    SDL_RenderCopyEx(renderer, heartIcon, &srcFrame, &destFrame, 0, NULL, SDL_FLIP_NONE);
+}
+
 void RenderWindow::display()
 {
      SDL_RenderPresent(renderer);
@@ -102,5 +137,5 @@ void RenderWindow::display()
 
 void RenderWindow::cleanUp()
 {
-    SDL_DestroyWindow(window);
+     SDL_DestroyWindow(window);
 }

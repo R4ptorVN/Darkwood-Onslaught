@@ -15,6 +15,9 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
 
     healthPoints = 100;
 
+    healthBar.x = 0; healthBar.y = 0;
+    healthBar.w = 100; healthBar.h = 14;
+
     movingLeft = movingRight = movingUp = movingDown = false;
 
     attacking = false;
@@ -77,6 +80,12 @@ bool Player::checkDeath()
     if (healthPoints < 100)
         healthPoints += 0.01;
     return false;
+}
+
+SDL_Rect Player::getHealthBar()
+{
+    healthBar.w = max(0, int(healthPoints));
+    return healthBar;
 }
 
 SDL_Rect Player::getHitBox()
@@ -198,7 +207,11 @@ void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameT
             frameDuration--;
 
         frame++;
-        frame %= maxFrames[state];
+
+        if (state == 3 && frame == maxFrames[state])
+            frame--;
+        else
+            frame %= maxFrames[state];
 
         updateFrame(srcXFrames[frame], srcYFrames[state][movingDirection]);
 

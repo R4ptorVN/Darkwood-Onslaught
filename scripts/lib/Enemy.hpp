@@ -18,6 +18,12 @@ class Enemy : public Entity
      private:
         float movementSpeed;
 
+        int attackCooldown;
+
+        int frameDuration;
+
+        int state;
+
         int frame;
         float lastFrameTime;
 
