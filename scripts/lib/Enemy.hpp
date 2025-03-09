@@ -13,6 +13,7 @@ class Enemy : public Entity
         void moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFrameTime);
         SDL_Rect getRenderBoxValues();
         SDL_Rect getHitBox();
+        void updateFrame(float x, float y, float w, float h);
 
 
      private:
@@ -24,14 +25,18 @@ class Enemy : public Entity
 
         int state;
 
+        bool facingLeft;
+
         int frame;
         float lastFrameTime;
-
         float lastFramePos;
 
-        int actionStatus;
+        int maxFrames[4];
 
-        float srcXFrames[8];
+        float srcXFrames[4][8];
+        float srcYFrames[4];
+        float srcWFrames[4];
+        float srcHFrames[4];
 };
 
 void setupEnemyTexture(RenderWindow& window);

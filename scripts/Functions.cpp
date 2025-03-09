@@ -23,8 +23,8 @@ bool checkCollision(SDL_Rect a, vector<Entity> &Obstacles)
 
 void updateCamera(SDL_Rect &camera, Player &mainCharacter)
 {
-        camera.x = mainCharacter.getDestFrame().x - SCREEN_WIDTH / 2;
-        camera.y = mainCharacter.getDestFrame().y - SCREEN_HEIGHT / 2;
+        camera.x = mainCharacter.getHitBox().x - SCREEN_WIDTH / 2;
+        camera.y = mainCharacter.getHitBox().y - SCREEN_HEIGHT / 2;
         camera.w = SCREEN_WIDTH;
         camera.h = SCREEN_HEIGHT;
 
