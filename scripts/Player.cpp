@@ -2,8 +2,8 @@
 
 using namespace std;
 
-#include "lib/Player.hpp"
 #include "lib/Functions.hpp"
+
 
 const float frameDistance = 64;
 
@@ -27,6 +27,8 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
     frameDuration = 0;
 
     state = 0;
+
+    textureState = 0;
 
     movingDirection = 0;
     movingDirections = 0;
@@ -63,6 +65,17 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
     srcYFrames[3][3] = 1581;
 }
 
+SDL_Texture* playerTexture[2];
+
+Player setupPlayerTexture(RenderWindow& window)
+{
+    playerTexture[0] = window.loadTexture("resources/warrior.png");
+    playerTexture[1] = window.loadTexture("resources/warriorTakeDamage.png");
+
+    Player player(26, 109, 12, 3, 300, 500, 12 * 2, 3 * 2, playerTexture[0]);
+    return player;
+}
+
 float Player::getHealthPoints()
 {
     return healthPoints;
@@ -80,6 +93,11 @@ bool Player::checkDeath()
     if (healthPoints < 100)
         healthPoints += 0.01;
     return false;
+}
+
+void Player::setStateTexture(int x)
+{
+    textureState = x;
 }
 
 SDL_Rect Player::getHealthBar()
@@ -140,6 +158,8 @@ bool Player::outOfMap()
 void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameTime, bool &gameRunning)
 {
     const Uint8* keyState = SDL_GetKeyboardState(NULL);
+
+    setTex(playerTexture[textureState]);
 
     if (frameDuration == 0)
     {

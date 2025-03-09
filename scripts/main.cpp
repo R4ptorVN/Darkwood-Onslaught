@@ -24,7 +24,6 @@ int main(int argc, char* args [])
     RenderWindow window("GAME v1.0");
 
     SDL_Texture* mapTexture = window.loadTexture("resources/map.png");
-    SDL_Texture* playerTexture = window.loadTexture("resources/Warrior.png");
 
     SDL_Rect camera;
 
@@ -32,15 +31,14 @@ int main(int argc, char* args [])
 
     setupEnemyTexture(window);
 
+    Player player = setupPlayerTexture(window);
+
     window.setUpHealthBar();
 
-    Player mainCharacter(26, 109, 12, 3, 300, 500, 12 * 2, 3 * 2, playerTexture);
 
     bool gameRunning = true;
 
     SDL_Event event;
-
-    buildEnemies();
 
     while (gameRunning)
     {
@@ -80,14 +78,17 @@ int main(int argc, char* args [])
 
         window.init();
 
-
         float currentFrameTime = SDL_GetPerformanceCounter() / (float)SDL_GetPerformanceFrequency() * 1000.0f;
 
-        mainCharacter.updatePlayerMovement(map.getHitBoxes(), currentFrameTime, gameRunning);
+        player.updatePlayerMovement(map.getHitBoxes(), currentFrameTime, gameRunning);
 
-        moveEnemies(mainCharacter, map.getHitBoxes(), currentFrameTime);
+        buildEnemies(currentFrameTime);
 
-        updateCamera(camera, mainCharacter);
+        moveEnemies(player, map.getHitBoxes(), currentFrameTime);
+
+        checkContactEnemies(player);
+
+        updateCamera(camera, player);
 
         map.renderLayer(window, camera, 0);
         map.renderLayer(window, camera, 1);
@@ -102,7 +103,7 @@ int main(int argc, char* args [])
 
         window.pushEntities(map.getFire(currentFrameTime), makeRec(0, 0, 16, 29), 2);
 
-        window.pushEntities(mainCharacter, mainCharacter.getRenderBoxValues(), 2);
+        window.pushEntities(player, player.getRenderBoxValues(), 2);
 
         vector<Enemy> enemies = getEnemies();
 
@@ -111,7 +112,7 @@ int main(int argc, char* args [])
 
         window.renderEntities(camera);
 
-        SDL_Rect healthBar = mainCharacter.getHealthBar();
+        SDL_Rect healthBar = player.getHealthBar();
         window.renderHealthBar(healthBar, camera);
 
         window.display();

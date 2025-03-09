@@ -4,6 +4,7 @@
 using namespace std;
 
 #include "Entity.hpp"
+#include "RenderWindow.hpp"
 
 
 class Player: public Entity
@@ -13,6 +14,7 @@ class Player: public Entity
         float getHealthPoints();
         void setHealthPoints(float x);
         bool checkDeath();
+        void setStateTexture(int x);
         SDL_Rect getHealthBar();
         SDL_Rect getHitBox();
         SDL_Rect getRenderBoxValues();
@@ -32,6 +34,8 @@ class Player: public Entity
 
         int state;
 
+        int textureState;
+
         float srcXFrames[20];
 
         float srcYFrames[4][4];
@@ -48,3 +52,5 @@ class Player: public Entity
         float lastFrameTime;
 
 };
+
+Player setupPlayerTexture(RenderWindow& window);

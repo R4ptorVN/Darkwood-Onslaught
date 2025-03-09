@@ -4,6 +4,7 @@ using namespace std;
 
 const int EnemiesLimit = 15;
 
+
 Enemy::Enemy(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex)
 :Entity(srcX, srcY, srcW, srcH, desX, desY, desW, desH, tex)
 {
@@ -48,13 +49,54 @@ void setupEnemyTexture(RenderWindow& window)
 	skeletonWarrior[1] = window.loadTexture("resources/skeletonWarriorAttacking.png");
 }
 
-void buildEnemies()
+float lastEnemyTime = 0;
+void buildEnemies(float currentFrameTime)
 {
 	if ((int)Enemies.size() == EnemiesLimit)
 		return;
 
-	Enemy skeleton(16, 40, 32, 4, 500, 500, 32 * 1.25, 4 * 1.25, skeletonWarrior[0]);
-    Enemies.push_back(skeleton);
+    if (currentFrameTime - lastEnemyTime > 3000)
+    {
+    	int dir = Rand(0, 3);
+    	float srcX;
+    	float srcY;
+
+    	switch (dir)
+    	{
+    			case 0:
+    			{
+    				srcX = Rand(0, LEVEL_WIDTH);
+    				srcY = Rand(-200, -1);
+    				break;
+    			}
+
+    			case 1:
+    			{
+    				srcX = Rand(-200, -1);
+    				srcY = Rand(0, LEVEL_HEIGHT);
+    				break;
+    			}
+
+    			case 2:
+    			{
+    				srcX = Rand(0, LEVEL_WIDTH);
+    				srcY = Rand(LEVEL_HEIGHT + 1, LEVEL_HEIGHT + 200);
+    				break;
+    			}
+
+    			case 3:
+    			{
+    				srcX = Rand(LEVEL_WIDTH + 1, LEVEL_WIDTH + 200);
+    				srcY = Rand(0, LEVEL_HEIGHT);
+    				break;
+    			}
+    	}
+
+    	Enemy skeleton(16, 40, 32, 4, srcX, srcY, 32 * 1.25, 4 * 1.25, skeletonWarrior[0]);
+    	Enemies.push_back(skeleton);
+
+    	lastEnemyTime = currentFrameTime;
+    }
 }
 
 vector<Enemy> getEnemies()
@@ -102,8 +144,10 @@ void Enemy::updateFrame(float x, float y, float w, float h)
 }
 
 vector<pair<SDL_Rect, float> > damageBoxes;
-void checkDamage(Player& player)
+bool checkDamage(Player& player)
 {
+	 bool contact = false;
+
 	 for (auto b : damageBoxes)
 	 {
 		 SDL_Rect a = player.getHitBox();
@@ -112,13 +156,18 @@ void checkDamage(Player& player)
 	 	 		float health = player.getHealthPoints();
 	 	 		health -= b.second;
 	 	 		player.setHealthPoints(health);
+
+	 	 	    contact = true;
 	 	 }
 	 }
+
+	 return contact;
 }
 
 float targetX = 0, targetY = 0;
 void Enemy::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFrameTime)
 {
+
 	if (currentFrameTime - lastFramePos > 550)
 	{
 		targetX = player.getDesX();
@@ -150,7 +199,7 @@ void Enemy::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFr
 
 	setTex(skeletonWarrior[state]);
 
-	if (currentFrameTime - lastFrameTime > 100)
+	if (currentFrameTime - lastFrameTime > 85)
 	{
 		if (frameDuration > 0)
 			frameDuration--;
@@ -162,8 +211,6 @@ void Enemy::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFr
 
 		lastFrameTime = currentFrameTime;
 	}
-
-	damageBoxes.clear();
 
 	switch (state)
 	{
@@ -237,13 +284,21 @@ void Enemy::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFr
 		setFlip(SDL_FLIP_HORIZONTAL);
 
 	damageBoxes.push_back({getHitBox(), 0.5});
-	checkDamage(player);
 }
 
 void moveEnemies(Player &player, vector<Entity> &Obstacles, float currentFrameTime)
 {
+	damageBoxes.clear();
 	for (Enemy &e : Enemies)
 		e.moveEnemy(player, Obstacles, currentFrameTime);
+}
+
+void checkContactEnemies(Player &player)
+{
+	if (checkDamage(player))
+		player.setStateTexture(1);
+	else
+		player.setStateTexture(0);
 }
 
 void renderEnemies(RenderWindow& window, SDL_Rect &camera)

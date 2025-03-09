@@ -15,7 +15,6 @@ class Enemy : public Entity
         SDL_Rect getHitBox();
         void updateFrame(float x, float y, float w, float h);
 
-
      private:
         float movementSpeed;
 
@@ -41,10 +40,12 @@ class Enemy : public Entity
 
 void setupEnemyTexture(RenderWindow& window);
 
-void buildEnemies();
+void buildEnemies(float currentFrameTime);
 
 vector<Enemy> getEnemies();
 
 void moveEnemies(Player &player, vector<Entity> &Obstacles, float currentFrameTime);
+
+void checkContactEnemies(Player &player);
 
 void renderEnemies(RenderWindow& window, SDL_Rect &camera);
