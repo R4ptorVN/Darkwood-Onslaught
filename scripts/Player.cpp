@@ -7,6 +7,14 @@ using namespace std;
 
 const float frameDistance = 64;
 
+float srcXFrames[20];
+
+float srcYFrames[4][4];
+
+int maxFrames[4];
+
+SDL_Rect swordFrame[4];
+
 Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex)
 :Entity(srcX, srcY, srcW, srcH, desX, desY, desW, desH, tex)
 {
@@ -63,6 +71,18 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
     srcYFrames[3][1] = 1581;
     srcYFrames[3][2] = 1581;
     srcYFrames[3][3] = 1581;
+
+    swordFrame[0].x = 18; swordFrame[0].y = -17;
+    swordFrame[0].w = 20; swordFrame[0].h = 4;
+
+    swordFrame[1].x = -2; swordFrame[1].y = 3;
+    swordFrame[1].w = 4; swordFrame[1].h = 14;
+
+    swordFrame[2].x = -25; swordFrame[2].y = -16;
+    swordFrame[2].w = 16; swordFrame[2].h = 4;
+
+    swordFrame[3].x = 11; swordFrame[3].y = -45;
+    swordFrame[3].w = 4; swordFrame[3].h = 16;
 }
 
 SDL_Texture* playerTexture[2];
@@ -88,7 +108,7 @@ void Player::setHealthPoints(float x)
 
 bool Player::checkDeath()
 {
-    if (getHealthPoints() <= 0)
+    if (healthPoints <= 0)
         return true;
     if (healthPoints < 100)
         healthPoints += 0.01;
@@ -98,6 +118,11 @@ bool Player::checkDeath()
 void Player::setStateTexture(int x)
 {
     textureState = x;
+}
+
+bool Player::isAttacking()
+{
+    return attacking;
 }
 
 SDL_Rect Player::getHealthBar()
@@ -126,6 +151,18 @@ SDL_Rect Player::getRenderBoxValues()
     renderBox.w = 64;
 
     return renderBox;
+}
+
+SDL_Rect Player::getSwordBox()
+{
+    SDL_Rect swordBox = getDestFrame();
+
+    swordBox.x += (swordFrame[movingDirection].x * 2);
+    swordBox.y += (swordFrame[movingDirection].y * 2);
+    swordBox.w = swordFrame[movingDirection].w * 2;
+    swordBox.h = swordFrame[movingDirection].h * 2;
+
+    return swordBox;
 }
 
 
@@ -257,6 +294,16 @@ void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameT
                     setDesX(prev_desX);
                     setDesY(prev_desY);
                 }
+
+                break;
+            }
+
+            case 2:
+            {
+                if (frame == 1)
+                    attacking = true;
+                else
+                    attacking = false;
 
                 break;
             }

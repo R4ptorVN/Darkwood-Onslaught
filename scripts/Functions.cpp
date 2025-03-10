@@ -2,13 +2,7 @@
 
 using namespace std;
 
-int Rand(int l, int r)
-{
-        return l + ((int)rand() * (RAND_MAX + 1) * (RAND_MAX + 1) * (RAND_MAX + 1) +
-                    (int)rand() * (RAND_MAX + 1) * (RAND_MAX + 1) +
-                    (int)rand() * (RAND_MAX + 1) +
-                    rand()) % (r - l + 1);
-}
+mt19937 mt(chrono::steady_clock::now().time_since_epoch().count());
 
 bool checkCollision(SDL_Rect a, vector<Entity> &Obstacles)
 {

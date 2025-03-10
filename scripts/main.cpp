@@ -82,6 +82,9 @@ int main(int argc, char* args [])
 
         player.updatePlayerMovement(map.getHitBoxes(), currentFrameTime, gameRunning);
 
+        if (player.isAttacking())
+            checkDamageEnemies(player);
+
         buildEnemies(currentFrameTime);
 
         moveEnemies(player, map.getHitBoxes(), currentFrameTime);

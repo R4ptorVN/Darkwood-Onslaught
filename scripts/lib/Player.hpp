@@ -15,9 +15,11 @@ class Player: public Entity
         void setHealthPoints(float x);
         bool checkDeath();
         void setStateTexture(int x);
+        bool isAttacking();
         SDL_Rect getHealthBar();
         SDL_Rect getHitBox();
         SDL_Rect getRenderBoxValues();
+        SDL_Rect getSwordBox();
         void moveCharacter();
         void updateFrame(float x, float y);
         void updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameTime, bool &gameRunning);
@@ -35,12 +37,6 @@ class Player: public Entity
         int state;
 
         int textureState;
-
-        float srcXFrames[20];
-
-        float srcYFrames[4][4];
-
-        int maxFrames[4];
 
         int movingDirection;
         int movingDirections;
