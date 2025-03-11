@@ -5,7 +5,8 @@ using namespace std;
 #include "lib/Functions.hpp"
 
 
-const float frameDistance = 64;
+const float frameDistanceX = 48;
+const float frameDistanceY = 240;
 
 float srcXFrames[20];
 
@@ -13,7 +14,19 @@ float srcYFrames[4][4];
 
 int maxFrames[4];
 
-SDL_Rect swordFrame[4];
+SDL_Rect swordFrame[4][2];
+
+SDL_Rect makeRec(int x, int y, int w, int h)
+{
+    SDL_Rect rec;
+
+    rec.x = x;
+    rec.y = y;
+    rec.w = w;
+    rec.h = h;
+
+    return rec;
+}
 
 Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex)
 :Entity(srcX, srcY, srcW, srcH, desX, desY, desW, desH, tex)
@@ -43,56 +56,42 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
 
     lastFrameTime = 0;
 
-    maxFrames[0] = 12;
+    maxFrames[0] = 5;
     maxFrames[1] = 8;
     maxFrames[2] = 6;
-    maxFrames[3] = 14;
+    maxFrames[3] = 5;
 
-    srcXFrames[0] = 26;
+    srcXFrames[0] = 20;
     for (int i = 1; i < 20; i++)
-        srcXFrames[i] = srcXFrames[i - 1] + frameDistance;
+        srcXFrames[i] = srcXFrames[i - 1] + frameDistanceX;
 
-    srcYFrames[0][0] = 109;
-    srcYFrames[0][1] = 493;
-    srcYFrames[0][2] = 877;
-    srcYFrames[0][3] = 1261;
+    srcYFrames[0][0] = 85;
+    srcYFrames[1][0] = 37;
+    srcYFrames[2][0] = 133;
+    srcYFrames[3][0] = 229;
+    for (int i = 0; i < 4; i++)
+        for (int j = 1; j < 4; j++)
+             srcYFrames[i][j] = srcYFrames[i][j - 1] + frameDistanceY;
 
-    srcYFrames[1][0] = 237;
-    srcYFrames[1][1] = 622;
-    srcYFrames[1][2] = 1005;
-    srcYFrames[1][3] = 1389;
-
-    srcYFrames[2][0] = 365;
-    srcYFrames[2][1] = 749;
-    srcYFrames[2][2] = 1133;
-    srcYFrames[2][3] = 1517;
-
-    srcYFrames[3][0] = 1581;
-    srcYFrames[3][1] = 1581;
-    srcYFrames[3][2] = 1581;
-    srcYFrames[3][3] = 1581;
-
-    swordFrame[0].x = 18; swordFrame[0].y = -17;
-    swordFrame[0].w = 20; swordFrame[0].h = 4;
-
-    swordFrame[1].x = -2; swordFrame[1].y = 3;
-    swordFrame[1].w = 4; swordFrame[1].h = 14;
-
-    swordFrame[2].x = -25; swordFrame[2].y = -16;
-    swordFrame[2].w = 16; swordFrame[2].h = 4;
-
-    swordFrame[3].x = 11; swordFrame[3].y = -45;
-    swordFrame[3].w = 4; swordFrame[3].h = 16;
+    swordFrame[0][0] = makeRec(12, -37, 16, 48);
+    swordFrame[0][1] = makeRec(-20, -6, 48, 16);
+    swordFrame[1][0] = makeRec(-20, -6, 48, 16);
+    swordFrame[1][1] = makeRec(-20, -37, 16, 48);
+    swordFrame[2][0] = makeRec(-20, -37, 16, 48);
+    swordFrame[2][1] = makeRec(-20, -37, 48, 16);
+    swordFrame[3][0] = makeRec(-20, -37, 48, 16);
+    swordFrame[3][1] = makeRec(-12, -37, 16, 48);
 }
 
 SDL_Texture* playerTexture[2];
 
 Player setupPlayerTexture(RenderWindow& window)
 {
-    playerTexture[0] = window.loadTexture("resources/warrior.png");
-    playerTexture[1] = window.loadTexture("resources/warriorTakeDamage.png");
+    playerTexture[0] = window.loadTexture("resources/knight.png");
+    playerTexture[1] = window.loadTexture("resources/knightDamaged.png");
 
-    Player player(26, 109, 12, 3, 300, 500, 12 * 2, 3 * 2, playerTexture[0]);
+    Player player(20, 85, 8, 4, 300, 500, 8 * 1.75, 4 * 1.75, playerTexture[0]);
+
     return player;
 }
 
@@ -135,8 +134,8 @@ SDL_Rect Player::getHitBox()
 {
     SDL_Rect hitBox = getDestFrame();
 
-    hitBox.y -= (29 * 2);
-    hitBox.h = (32 * 2);
+    hitBox.y -= (25 * 1.75);
+    hitBox.h = (26 * 1.75);
 
     return hitBox;
 }
@@ -145,22 +144,22 @@ SDL_Rect Player::getRenderBoxValues()
 {
     SDL_Rect renderBox;
 
-    renderBox.x = -26;
-    renderBox.y = -45;
-    renderBox.h = 64;
-    renderBox.w = 64;
+    renderBox.x = -20;
+    renderBox.y = -37;
+    renderBox.h = 48;
+    renderBox.w = 48;
 
     return renderBox;
 }
 
-SDL_Rect Player::getSwordBox()
+SDL_Rect Player::getSwordBox(int box)
 {
     SDL_Rect swordBox = getDestFrame();
 
-    swordBox.x += (swordFrame[movingDirection].x * 2);
-    swordBox.y += (swordFrame[movingDirection].y * 2);
-    swordBox.w = swordFrame[movingDirection].w * 2;
-    swordBox.h = swordFrame[movingDirection].h * 2;
+    swordBox.x += (swordFrame[movingDirection][box].x * 2);
+    swordBox.y += (swordFrame[movingDirection][box].y * 2);
+    swordBox.w = swordFrame[movingDirection][box].w * 2;
+    swordBox.h = swordFrame[movingDirection][box].h * 2;
 
     return swordBox;
 }
@@ -203,7 +202,7 @@ void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameT
         if (checkDeath())
         {
             state = 3;
-            frameDuration = maxFrames[state];
+            frameDuration = maxFrames[state] + 5;
 
             frame = 0;
             updateFrame(srcXFrames[frame], srcYFrames[state][movingDirection]);

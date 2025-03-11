@@ -89,7 +89,7 @@ int main(int argc, char* args [])
 
         moveEnemies(player, map.getHitBoxes(), currentFrameTime);
 
-        checkContactEnemies(player);
+        checkContactPlayer(player);
 
         updateCamera(camera, player);
 
@@ -106,7 +106,7 @@ int main(int argc, char* args [])
 
         window.pushEntities(map.getFire(currentFrameTime), makeRec(0, 0, 16, 29), 2);
 
-        window.pushEntities(player, player.getRenderBoxValues(), 2);
+        window.pushEntities(player, player.getRenderBoxValues(), 1.75);
 
         vector<Enemy> enemies = getEnemies();
 

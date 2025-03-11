@@ -17,6 +17,7 @@ class Enemy : public Entity
         void moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFrameTime);
         SDL_Rect getRenderBoxValues();
         SDL_Rect getHitBox();
+        SDL_Rect getBodyBox();
         void updateFrame(float x, float y, float w, float h);
         void checkDamageEnemy(Player &player);
 
@@ -59,8 +60,8 @@ vector<Enemy> getEnemies();
 
 void moveEnemies(Player &player, vector<Entity> &Obstacles, float currentFrameTime);
 
-void checkContactEnemies(Player &player);
-
 void checkDamageEnemies(Player& player);
+
+void checkContactPlayer(Player &player);
 
 void renderEnemies(RenderWindow& window, SDL_Rect &camera);

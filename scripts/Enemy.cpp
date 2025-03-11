@@ -3,7 +3,7 @@
 
 using namespace std;
 
-const int EnemiesLimit = 10;
+const int EnemiesLimit = 15;
 
 
 Enemy::Enemy(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex)
@@ -179,6 +179,18 @@ SDL_Rect Enemy::getHitBox()
 	return hitBox;
 }
 
+SDL_Rect Enemy::getBodyBox()
+{
+	SDL_Rect BodyBox = getDestFrame();
+
+	BodyBox.x += (16 * 1.25);
+	BodyBox.y -= (26 * 1.25);
+	BodyBox.w = (15 * 1.25);
+	BodyBox.h = (19 * 1.25);
+
+	return BodyBox;
+}
+
 void Enemy::updateFrame(float x, float y, float w, float h)
 {
 	setSrcX(x);
@@ -194,9 +206,10 @@ void Enemy::checkDamageEnemy(Player &player)
 	if (frameDuration > 0 && state != 1)
 		return;
 
-	SDL_Rect a = player.getSwordBox();
+	SDL_Rect a1 = player.getSwordBox(0);
+	SDL_Rect a2 = player.getSwordBox(1);
 	SDL_Rect b = getHitBox();
-	if (SDL_HasIntersection(&a, &b))
+	if (SDL_HasIntersection(&a1, &b) || SDL_HasIntersection(&a2, &b))
 	{
 		takingDamage = true;
 
@@ -310,19 +323,20 @@ void Enemy::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFr
 				curX += movementSpeed;
 			}
 
+			setDesX(curX);
+
+			if (checkCollision(getDestFrame(), Obstacles))
+				setDesX(prev_X);
+
 			if (curY > targetY + movementSpeed)
 				curY -= movementSpeed;
 			else if (curY < targetY - movementSpeed)
 				curY += movementSpeed;
 
-			setDesX(curX);
 			setDesY(curY);
 
 			if (checkCollision(getDestFrame(), Obstacles))
-			{
-				setDesX(prev_X);
 				setDesY(prev_Y);
-			}
 
 			break;
 		}
@@ -360,7 +374,7 @@ void Enemy::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFr
 	else
 		setFlip(SDL_FLIP_HORIZONTAL);
 
-	damageBoxes.push_back({getHitBox(), 0.5});
+	damageBoxes.push_back({getBodyBox(), 0.5});
 }
 
 void checkDamageEnemies(Player& player)
@@ -384,7 +398,7 @@ void moveEnemies(Player &player, vector<Entity> &Obstacles, float currentFrameTi
 	}
 }
 
-void checkContactEnemies(Player &player)
+void checkContactPlayer(Player &player)
 {
 	if (checkDamagePlayer(player))
 		player.setStateTexture(1);

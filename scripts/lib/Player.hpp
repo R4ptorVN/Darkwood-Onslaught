@@ -19,7 +19,7 @@ class Player: public Entity
         SDL_Rect getHealthBar();
         SDL_Rect getHitBox();
         SDL_Rect getRenderBoxValues();
-        SDL_Rect getSwordBox();
+        SDL_Rect getSwordBox(int box);
         void moveCharacter();
         void updateFrame(float x, float y);
         void updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameTime, bool &gameRunning);

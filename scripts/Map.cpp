@@ -2,18 +2,6 @@
 
 using namespace std;
 
-SDL_Rect makeRec(int x, int y, int w, int h)
-{
-        SDL_Rect rec;
-
-        rec.x = x;
-        rec.y = y;
-        rec.w = w;
-        rec.h = h;
-
-        return rec;
-}
-
 Map::Map(RenderWindow &window)
 {
         SDL_Texture *Layer[4];
