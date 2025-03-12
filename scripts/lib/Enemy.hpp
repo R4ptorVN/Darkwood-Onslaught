@@ -10,6 +10,7 @@ class Enemy : public Entity
 {
     public:
         Enemy(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex);
+        int getState();
         int getFrameDuration();
         float getHealthPoints();
         void setHealthPoints(float x);
@@ -24,7 +25,7 @@ class Enemy : public Entity
      private:
         float movementSpeed;
 
-        int attackCooldown;
+        int actionCooldown;
 
         int frameDuration;
 
@@ -44,12 +45,12 @@ class Enemy : public Entity
         float lastFrameTime;
         float lastFramePos;
 
-        int maxFrames[4];
+        int maxFrames[5];
 
-        float srcXFrames[4][20];
-        float srcYFrames[4];
-        float srcWFrames[4];
-        float srcHFrames[4];
+        float srcXFrames[5][20];
+        float srcYFrames[5];
+        float srcWFrames[5];
+        float srcHFrames[5];
 };
 
 void setupEnemyTexture(RenderWindow& window);

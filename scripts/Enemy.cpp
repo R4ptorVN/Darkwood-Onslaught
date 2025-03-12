@@ -27,13 +27,15 @@ Enemy::Enemy(float srcX, float srcY, float srcW, float srcH, float desX, float d
 
 	frameDuration = 0;
 
-	attackCooldown = 0;
+	actionCooldown = 0;
 
 	facingLeft = false;
 
 	maxFrames[0] = 8;
 	maxFrames[1] = 11;
 	maxFrames[2] = 1;
+	maxFrames[3] = 1;
+	maxFrames[4] = 1;
 
 	srcXFrames[0][0] = 16;
 	srcYFrames[0] = 40;
@@ -50,37 +52,48 @@ Enemy::Enemy(float srcX, float srcY, float srcW, float srcH, float desX, float d
 		srcXFrames[1][i] = srcXFrames[1][i - 1] + 80;
 
 	srcXFrames[2][0] = 16;
+	srcXFrames[2][1] = 16 + 64;
 	srcYFrames[2] = 43;
 	srcWFrames[2] = 32;
 	srcHFrames[2] = 4;
 
+	srcXFrames[3][0] = 16;
+	srcYFrames[3] = 43;
+	srcWFrames[3] = 32;
+	srcHFrames[3] = 4;
+
+	srcXFrames[4][0] = 32;
+	srcYFrames[4] = 43;
+	srcWFrames[4] = 16;
+	srcHFrames[4] = 4;
+	for (int i = 1; i < 3; i++)
+		 srcXFrames[4][i] = srcXFrames[4][i - 1] + 96;
+
 }
 
-SDL_Texture* skeletonWarrior[4];
+int Enemy::getState()
+{
+	return state;
+}
+
+SDL_Texture* skeletonWarrior[5];
 vector<Enemy> Enemies;
 
-SDL_Rect renderBox[4];
+SDL_Rect renderBox[5];
 
 void setupEnemyTexture(RenderWindow& window)
 {
 	skeletonWarrior[0] = window.loadTexture("resources/skeletonWarriorWalking.png");
 	skeletonWarrior[1] = window.loadTexture("resources/skeletonWarriorAttacking.png");
-	skeletonWarrior[2] = window.loadTexture("resources/skeletonWarriorDamaged.png");
+	skeletonWarrior[2] = window.loadTexture("resources/skeletonWarriorBlocking.png");
+	skeletonWarrior[3] = window.loadTexture("resources/skeletonWarriorDamaged.png");
+	skeletonWarrior[4] = window.loadTexture("resources/skeletonWarriorCorpse.png");
 
-	renderBox[0].x = -16;
-	renderBox[0].y = -40;
-	renderBox[0].w = 64;
-	renderBox[0].h = 48;
-
-	renderBox[1].x = -16;
-	renderBox[1].y = -48;
-	renderBox[1].w = 80;
-	renderBox[1].h = 54;
-
-	renderBox[2].x = -16;
-	renderBox[2].y = -43;
-	renderBox[2].w = 64;
-	renderBox[2].h = 48;
+	renderBox[0] = makeRec(-16, -40, 64, 48);
+	renderBox[1] = makeRec(-16, -48, 80, 54);
+	renderBox[2] = makeRec(-16, -43, 64, 48);
+	renderBox[3] = makeRec(-16, -43, 64, 48);
+	renderBox[4] = makeRec(-32, -43, 97, 63);
 }
 
 int Enemy::getFrameDuration()
@@ -193,17 +206,14 @@ SDL_Rect Enemy::getBodyBox()
 
 void Enemy::updateFrame(float x, float y, float w, float h)
 {
-	setSrcX(x);
-	setSrcY(y);
-	setSrcW(w);
-	setSrcH(h);
-	setDesW(w * 1.25);
-	setDesH(h * 1.25);
+	setSrcX(x); setSrcY(y);
+	setSrcW(w); setSrcH(h);
+	setDesW(w * 1.25); setDesH(h * 1.25);
 }
 
 void Enemy::checkDamageEnemy(Player &player)
 {
-	if (frameDuration > 0 && state != 1)
+	if (state > 2)
 		return;
 
 	SDL_Rect a1 = player.getSwordBox(0);
@@ -211,10 +221,15 @@ void Enemy::checkDamageEnemy(Player &player)
 	SDL_Rect b = getHitBox();
 	if (SDL_HasIntersection(&a1, &b) || SDL_HasIntersection(&a2, &b))
 	{
+		if (state == 2 && ((player.getDesX() < getDesX() && !facingLeft) || ((player.getDesX() > getDesX() && facingLeft))))
+		{
+			frame = 1;
+			return;
+		}
 		takingDamage = true;
 
 		float health = getHealthPoints();
-		health -= 20;
+		health -= player.getAttackingDamage();
 		setHealthPoints(health);
 	}
 }
@@ -254,23 +269,31 @@ void Enemy::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFr
 
 	if (frameDuration == 0 || takingDamage)
 	{
-		if (takingDamage)
-		{
-			if (state != 2)
-				frameDuration = 5;
 
-			state = 2;
+		if (checkDeath() && frameDuration == 0)
+		{
+			frameDuration = 10;
+
+			state = 4;
+			frame = mt() % 3;
+			updateFrame(srcXFrames[state][frame], srcYFrames[state], srcWFrames[state], srcHFrames[state]);
+		}
+		else if (takingDamage)
+		{
+			if (state != 3)
+				frameDuration = 5;
+			state = 3;
 			frame = 0;
 			updateFrame(srcXFrames[state][frame], srcYFrames[state], srcWFrames[state], srcHFrames[state]);
 		}
-		else if (attackCooldown == 0 && abs(targetX - getHitBox().x) <= 50 && abs(targetY - getHitBox().y) <= 50)
+		else if (actionCooldown == 0 && abs(targetX - getHitBox().x) <= 50 && abs(targetY - getHitBox().y) <= 50)
 		{
-			attackCooldown = 200;
+			actionCooldown = 200;
 
-			state = 1;
+			state = 1 + (mt() % 2);
 			frame = 0;
 			updateFrame(srcXFrames[state][frame], srcYFrames[state], srcWFrames[state], srcHFrames[state]);
-			frameDuration = maxFrames[state];
+			frameDuration = 11;
 		}
 		else
 		{
@@ -279,8 +302,8 @@ void Enemy::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFr
 			updateFrame(srcXFrames[state][frame], srcYFrames[state], srcWFrames[state], srcHFrames[state]);
 		}
 
-		if (attackCooldown > 0)
-			attackCooldown--;
+		if (actionCooldown > 0)
+			actionCooldown--;
 	}
 
 	setTex(skeletonWarrior[state]);
@@ -294,8 +317,11 @@ void Enemy::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFr
 				takingDamage = false;
 		}
 
-		frame++;
-		frame %= maxFrames[state];
+		if (state < 2)
+		{
+			frame++;
+			frame %= maxFrames[state];
+		}
 
 		updateFrame(srcXFrames[state][frame], srcYFrames[state], srcWFrames[state], srcHFrames[state]);
 
@@ -374,7 +400,8 @@ void Enemy::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFr
 	else
 		setFlip(SDL_FLIP_HORIZONTAL);
 
-	damageBoxes.push_back({getBodyBox(), 0.5});
+	if (state != 4)
+	    damageBoxes.push_back({getBodyBox(), 0.5});
 }
 
 void checkDamageEnemies(Player& player)
@@ -389,7 +416,7 @@ void moveEnemies(Player &player, vector<Entity> &Obstacles, float currentFrameTi
 	for (int i = 0; i < Enemies.size(); i++)
 	{
 		Enemies[i].moveEnemy(player, Obstacles, currentFrameTime);
-		if (Enemies[i].checkDeath() && Enemies[i].getFrameDuration() == 0)
+		if (Enemies[i].getState() == 4 && Enemies[i].getFrameDuration() == 0)
 		{
 			swap(Enemies[i], Enemies.back());
 			Enemies.pop_back();

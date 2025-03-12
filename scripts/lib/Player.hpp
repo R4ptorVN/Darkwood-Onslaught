@@ -16,6 +16,7 @@ class Player: public Entity
         bool checkDeath();
         void setStateTexture(int x);
         bool isAttacking();
+        float getAttackingDamage();
         SDL_Rect getHealthBar();
         SDL_Rect getHitBox();
         SDL_Rect getRenderBoxValues();
@@ -26,7 +27,6 @@ class Player: public Entity
         bool outOfMap();
 
     private:
-
         float movementSpeed;
         bool movingLeft, movingRight, movingUp, movingDown, attacking;
 
@@ -43,6 +43,8 @@ class Player: public Entity
 
         float healthPoints;
 
+        float attackingDamage;
+
         SDL_Rect healthBar;
 
         float lastFrameTime;
@@ -50,3 +52,5 @@ class Player: public Entity
 };
 
 Player setupPlayerTexture(RenderWindow& window);
+
+void updateCamera(SDL_Rect &camera, Player &mainCharacter);

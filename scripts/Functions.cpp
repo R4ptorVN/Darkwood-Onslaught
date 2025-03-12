@@ -15,16 +15,14 @@ bool checkCollision(SDL_Rect a, vector<Entity> &Obstacles)
         return false;
 }
 
-void updateCamera(SDL_Rect &camera, Player &mainCharacter)
+SDL_Rect makeRec(int x, int y, int w, int h)
 {
-        camera.x = mainCharacter.getHitBox().x - SCREEN_WIDTH / 2;
-        camera.y = mainCharacter.getHitBox().y - SCREEN_HEIGHT / 2;
-        camera.w = SCREEN_WIDTH;
-        camera.h = SCREEN_HEIGHT;
+    SDL_Rect rec;
 
-        if (camera.x < 0) camera.x = 0;
-        if (camera.y < 0) camera.y = 0;
-        if (camera.x > LEVEL_WIDTH - SCREEN_WIDTH) camera.x = LEVEL_WIDTH - SCREEN_WIDTH;
-        if (camera.y > LEVEL_HEIGHT - SCREEN_HEIGHT) camera.y = LEVEL_HEIGHT - SCREEN_HEIGHT;
+    rec.x = x;
+    rec.y = y;
+    rec.w = w;
+    rec.h = h;
+
+    return rec;
 }
-

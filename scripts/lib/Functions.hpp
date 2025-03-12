@@ -1,6 +1,10 @@
 #pragma once
 
-#include "Player.hpp"
+#include "SDL.h"
+#include "SDL_image.h"
+#include<bits/stdc++.h>
+
+#include"Entity.hpp"
 
 using namespace std;
 
@@ -12,6 +16,7 @@ const int SCREEN_HEIGHT = 384;
 extern mt19937 mt;
 
 bool checkCollision(SDL_Rect a, vector<Entity> &Obstacles);
-void updateCamera(SDL_Rect &camera, Player &mainCharacter);
+
+SDL_Rect makeRec(int x, int y, int w, int h);
 
 

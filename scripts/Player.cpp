@@ -2,6 +2,7 @@
 
 using namespace std;
 
+#include "lib/Player.hpp"
 #include "lib/Functions.hpp"
 
 
@@ -16,18 +17,6 @@ int maxFrames[4];
 
 SDL_Rect swordFrame[4][2];
 
-SDL_Rect makeRec(int x, int y, int w, int h)
-{
-    SDL_Rect rec;
-
-    rec.x = x;
-    rec.y = y;
-    rec.w = w;
-    rec.h = h;
-
-    return rec;
-}
-
 Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex)
 :Entity(srcX, srcY, srcW, srcH, desX, desY, desW, desH, tex)
 {
@@ -35,6 +24,8 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
     movementSpeed = 2.5;
 
     healthPoints = 100;
+
+    attackingDamage = 20;
 
     healthBar.x = 0; healthBar.y = 0;
     healthBar.w = 100; healthBar.h = 14;
@@ -122,6 +113,11 @@ void Player::setStateTexture(int x)
 bool Player::isAttacking()
 {
     return attacking;
+}
+
+float Player::getAttackingDamage()
+{
+    return attackingDamage;
 }
 
 SDL_Rect Player::getHealthBar()
@@ -299,7 +295,7 @@ void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameT
 
             case 2:
             {
-                if (frame == 1)
+                if (frame == 2)
                     attacking = true;
                 else
                     attacking = false;
@@ -316,3 +312,17 @@ void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameT
             }
     }
 }
+
+void updateCamera(SDL_Rect &camera, Player &mainCharacter)
+{
+        camera.x = mainCharacter.getHitBox().x - SCREEN_WIDTH / 2;
+        camera.y = mainCharacter.getHitBox().y - SCREEN_HEIGHT / 2;
+        camera.w = SCREEN_WIDTH;
+        camera.h = SCREEN_HEIGHT;
+
+        if (camera.x < 0) camera.x = 0;
+        if (camera.y < 0) camera.y = 0;
+        if (camera.x > LEVEL_WIDTH - SCREEN_WIDTH) camera.x = LEVEL_WIDTH - SCREEN_WIDTH;
+        if (camera.y > LEVEL_HEIGHT - SCREEN_HEIGHT) camera.y = LEVEL_HEIGHT - SCREEN_HEIGHT;
+}
+

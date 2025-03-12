@@ -23,7 +23,7 @@ int main(int argc, char* args [])
 
     RenderWindow window("GAME v1.0");
 
-    SDL_Texture* mapTexture = window.loadTexture("resources/map.png");
+    SDL_Texture* wave = window.loadTexture("resources/Wave.png");
 
     SDL_Rect camera;
 
@@ -104,7 +104,7 @@ int main(int argc, char* args [])
         for (int i = 0; i < int(obstacleDisplay.size()); i++)
              window.pushEntities(obstaclesHitBox[i], obstacleDisplay[i], 2);
 
-        window.pushEntities(map.getFire(currentFrameTime), makeRec(0, 0, 16, 29), 2);
+         window.pushEntities(map.getFire(currentFrameTime), makeRec(0, 0, 16, 29), 2);
 
         window.pushEntities(player, player.getRenderBoxValues(), 1.75);
 
