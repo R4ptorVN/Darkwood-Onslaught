@@ -105,7 +105,7 @@ void spawnEnemies(float currentFrameTime)
 	if (EnemiesCount == EnemiesLimit)
 		return;
 
-    if (currentFrameTime - lastEnemyTime > 3000)
+    if (currentFrameTime - lastEnemyTime > 2000)
     {
     	int dir = mt() % 4;
     	int desX;
@@ -253,7 +253,7 @@ void renderEnemies(RenderWindow& window, SDL_Rect &camera)
 }
 
 Skeleton::Skeleton(float desX, float desY)
-:Enemy(16, 40, 32, 4, desX, desY, 32 * 1.25, 4 * 1.25, skeletonTexture[0])
+:Enemy(32, 41, 16, 4, desX, desY, 16 * 1.25, 4 * 1.25, skeletonTexture[0])
 {
 	movementSpeed = 1;
 
@@ -265,19 +265,19 @@ Skeleton::Skeleton(float desX, float desY)
 	maxFrames[3] = 1;
 	maxFrames[4] = 1;
 
-	srcXFrames[0][0] = 16;
-	srcYFrames[0] = 40;
-	srcWFrames[0] = 32;
+	srcXFrames[0][0] = 32;
+	srcYFrames[0] = 41;
+	srcWFrames[0] = 16;
 	srcHFrames[0] = 4;
 	for(int i = 1; i < maxFrames[0]; i++)
-		srcXFrames[0][i] = srcXFrames[0][i - 1] + 64;
+		srcXFrames[0][i] = srcXFrames[0][i - 1] + 80;
 
-	srcXFrames[1][0] = 16;
+	srcXFrames[1][0] = 32;
 	srcYFrames[1] = 48;
-	srcWFrames[1] = 48;
+	srcWFrames[1] = 32;
 	srcHFrames[1] = 4;
 	for (int i = 1; i < maxFrames[1]; i++)
-		srcXFrames[1][i] = srcXFrames[1][i - 1] + 80;
+		srcXFrames[1][i] = srcXFrames[1][i - 1] + 96;
 
 	srcXFrames[2][0] = 16;
 	srcXFrames[2][1] = 16 + 64;
@@ -297,8 +297,8 @@ Skeleton::Skeleton(float desX, float desY)
 	for (int i = 1; i < 3; i++)
 		srcXFrames[4][i] = srcXFrames[4][i - 1] + 96;
 
-	renderBox[0] = makeRec(-16, -40, 64, 48);
-	renderBox[1] = makeRec(-16, -48, 80, 54);
+	renderBox[0] = makeRec(-32, -41, 80, 48);
+	renderBox[1] = makeRec(-32, -48, 96, 54);
 	renderBox[2] = makeRec(-16, -43, 64, 48);
 	renderBox[3] = makeRec(-16, -43, 64, 48);
 	renderBox[4] = makeRec(-32, -43, 97, 63);
@@ -308,7 +308,7 @@ SDL_Rect Skeleton::getHitBox()
 {
 	SDL_Rect hitBox = getDestFrame();
 
-	hitBox.x += (12 * 1.25);
+	hitBox.x -= (4 * 1.25);
 	hitBox.y -= (35 * 1.25);
 	hitBox.w = (15 * 1.25);
 	hitBox.h = (29 * 1.25);
@@ -320,8 +320,8 @@ SDL_Rect Skeleton::getBodyBox()
 {
 	SDL_Rect BodyBox = getDestFrame();
 
-	BodyBox.x += (16 * 1.25);
-	BodyBox.y -= (26 * 1.25);
+	BodyBox.x -= (4 * 1.25);
+	BodyBox.y -= (35 * 1.25);
 	BodyBox.w = (15 * 1.25);
 	BodyBox.h = (19 * 1.25);
 
@@ -338,7 +338,7 @@ void Skeleton::checkDamageEnemy(Player &player)
 	SDL_Rect b = getHitBox();
 	if (SDL_HasIntersection(&a1, &b) || SDL_HasIntersection(&a2, &b))
 	{
-		if (state == 2 && ((player.getDesX() < getDesX() && !facingLeft) || ((player.getDesX() > getDesX() && facingLeft))))
+		if (state == 2 && ((player.getDesX() < getDesX() && facingLeft) || ((player.getDesX() > getDesX() && !facingLeft))))
 		{
 			frame = 1;
 			return;
@@ -379,7 +379,7 @@ void Skeleton::moveEnemy(Player &player, vector<Entity> &Obstacles, float curren
 			frame = 0;
 			updateFrame(srcXFrames[state][frame], srcYFrames[state], srcWFrames[state], srcHFrames[state]);
 		}
-		else if (actionCooldown == 0 && abs(targetX - getHitBox().x) <= 50 && abs(targetY - getHitBox().y) <= 50)
+		else if (actionCooldown == 0 && abs(targetX - getDesX()) <= 55 && abs(targetY - getDesY()) <= 35)
 		{
 			actionCooldown = 200;
 
@@ -468,7 +468,7 @@ void Skeleton::moveEnemy(Player &player, vector<Entity> &Obstacles, float curren
 
 				if (facingLeft)
 				{
-					sword.x = getDesX() - (15 * 1.25);
+					sword.x = getDesX() - (31 * 1.25);
 					sword.y = getDesY() - (16 * 1.25);
 					sword.w = 31 * 1.25;
 					sword.h = 5 * 1.25;
@@ -723,5 +723,6 @@ void Orc::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFram
 	else
 		setFlip(SDL_FLIP_HORIZONTAL);
 
-	damageBoxes.push_back({getBodyBox(), 0.5});
+	if (state != 4)
+		damageBoxes.push_back({getBodyBox(), 0.5});
 }
