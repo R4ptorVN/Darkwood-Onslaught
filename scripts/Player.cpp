@@ -80,8 +80,8 @@ SDL_Texture* playerTexture[2];
 
 Player setupPlayerTexture(RenderWindow& window)
 {
-    playerTexture[0] = window.loadTexture("resources/knight.png");
-    playerTexture[1] = window.loadTexture("resources/knightDamaged.png");
+    playerTexture[0] = window.loadTexture("resources/Player/knight.png");
+    playerTexture[1] = window.loadTexture("resources/Player/knightDamaged.png");
 
     Player player(20, 85, 8, 4, 300, 500, 8 * 1.75, 4 * 1.75, playerTexture[0]);
 

@@ -4,8 +4,6 @@ using namespace std;
 
 #include "lib/Entity.hpp"
 
-Entity::Entity(){}
-
 Entity::Entity(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* p_tex)
 :srcX(srcX), srcY(srcY), srcW(srcW), srcH(srcH), desX(desX), desY(desY), desW(desW), desH(desH), tex(p_tex)
 {

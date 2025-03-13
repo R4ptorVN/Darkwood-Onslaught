@@ -58,8 +58,8 @@ SDL_Texture* healthBarFrame;
 SDL_Texture* heartIcon;
 void RenderWindow::setUpHealthBar()
 {
-     healthBarFrame = loadTexture("resources/Bar.png");
-     heartIcon = loadTexture("resources/Heart.png");
+     healthBarFrame = loadTexture("resources/Miscellaneous/Bar.png");
+     heartIcon = loadTexture("resources/Miscellaneous/Heart.png");
 }
 
 void RenderWindow::init()
@@ -151,7 +151,7 @@ void RenderWindow::renderWave(int wave)
     SDL_Color textColor = {0, 0, 0};
     string strWord = "Wave:" + to_string(wave);
     const char *Word = strWord.c_str();
-    SDL_Texture* waveText = loadText("resources/PublicPixel.ttf", Word, 20, textColor);
+    SDL_Texture* waveText = loadText("resources/Font/PublicPixel.ttf", Word, 20, textColor);
 
     SDL_Rect* src = NULL;
     SDL_Rect dest = makeRec(SCREEN_WIDTH - 150, SCREEN_HEIGHT - 30, tmpW, tmpH);

@@ -37,6 +37,8 @@ int main(int argc, char* args [])
 
     bool gameRunning = true;
 
+    newWave();
+
     SDL_Event event;
 
     while (gameRunning)
@@ -84,7 +86,7 @@ int main(int argc, char* args [])
         if (player.isAttacking())
             checkDamageEnemies(player);
 
-        buildEnemies(currentFrameTime);
+        spawnEnemies(currentFrameTime);
 
         moveEnemies(player, map.getHitBoxes(), currentFrameTime);
 

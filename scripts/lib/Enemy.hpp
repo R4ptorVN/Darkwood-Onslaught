@@ -9,20 +9,18 @@ using namespace std;
 class Enemy : public Entity
 {
     public:
+        virtual ~Enemy() = default;
         Enemy(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex);
         int getState();
         int getFrameDuration();
         float getHealthPoints();
         void setHealthPoints(float x);
         bool checkDeath();
-        void moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFrameTime);
         SDL_Rect getRenderBoxValues();
-        SDL_Rect getHitBox();
-        SDL_Rect getBodyBox();
         void updateFrame(float x, float y, float w, float h);
         void checkDamageEnemy(Player &player);
 
-     private:
+     protected:
         float movementSpeed;
 
         int actionCooldown;
@@ -51,13 +49,17 @@ class Enemy : public Entity
         float srcYFrames[5];
         float srcWFrames[5];
         float srcHFrames[5];
+
+        SDL_Rect renderBox[5];
 };
 
 void setupEnemyTexture(RenderWindow& window);
 
+void newWave();
+
 int getWave();
 
-void buildEnemies(float currentFrameTime);
+void spawnEnemies(float currentFrameTime);
 
 vector<Enemy> getEnemies();
 
@@ -68,3 +70,24 @@ void checkDamageEnemies(Player& player);
 void checkContactPlayer(Player &player);
 
 void renderEnemies(RenderWindow& window, SDL_Rect &camera);
+
+class Skeleton : public Enemy
+{
+    public:
+        Skeleton(float desX, float desY);
+        SDL_Rect getHitBox();
+        SDL_Rect getBodyBox();
+        void checkDamageEnemy(Player &player);
+        void moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFrameTime);
+
+};
+
+class Orc : public Enemy
+{
+    public:
+        Orc(float desX, float desY);
+        SDL_Rect getHitBox();
+        SDL_Rect getBodyBox();
+        void checkDamageEnemy(Player &player);
+        void moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFrameTime);
+};

@@ -19,7 +19,7 @@ class Map
         vector<SDL_Rect>& getDisplayBoxesValues();
         Entity& getFire(float currentFrameTime);
 
-    private:
+    protected:
         Entity mapLayer[4];
 
         vector<Entity> obstacleHitBox;

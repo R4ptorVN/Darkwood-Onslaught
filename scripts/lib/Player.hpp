@@ -27,7 +27,7 @@ class Player: public Entity
         bool outOfMap();
         void updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameTime, bool &gameRunning);
 
-    private:
+    protected:
         float movementSpeed;
         bool movingLeft, movingRight, movingUp, movingDown, attacking;
 

@@ -2,13 +2,17 @@
 
 using namespace std;
 
+SDL_Texture* FireTex;
+
 Map::Map(RenderWindow &window)
 {
         SDL_Texture *Layer[4];
-        Layer[0] = window.loadTexture("resources/mapLayer1.png");
-        Layer[1] = window.loadTexture("resources/mapLayer2.png");
-        Layer[2] = window.loadTexture("resources/mapLayer3.png");
-        Layer[3] = window.loadTexture("resources/mapLayer4.png");
+        Layer[0] = window.loadTexture("resources/Map/mapLayer1.png");
+        Layer[1] = window.loadTexture("resources/Map/mapLayer2.png");
+        Layer[2] = window.loadTexture("resources/Map/mapLayer3.png");
+        Layer[3] = window.loadTexture("resources/Map/mapLayer4.png");
+
+        FireTex = window.loadTexture("resources/Map/Fire.png");
 
         for (int i = 0; i < 4; i++)
         {
@@ -95,8 +99,6 @@ Map::Map(RenderWindow &window)
                 obstacleDisplay[i].x -= obstacleHitBox[i].getSrcX();
                 obstacleDisplay[i].y -= obstacleHitBox[i].getSrcY();
         }
-
-        SDL_Texture *FireTex = window.loadTexture("resources/Fire.png");
 
         Fire.setTex(FireTex); Fire.setFlip(SDL_FLIP_NONE);
         Fire.setSrcX(0); Fire.setSrcY(0); Fire.setSrcW(16); Fire.setSrcH(29);

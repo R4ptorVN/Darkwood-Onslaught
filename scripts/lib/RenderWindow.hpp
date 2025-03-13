@@ -27,7 +27,7 @@ class RenderWindow
         void renderHealthBar(SDL_Rect &healthBar);
         void renderWave(int wave);
         void display();
-    private:
+    protected:
         SDL_Window* window;
         SDL_Renderer* renderer;
         vector<pair<pair<Entity, SDL_Rect>, float> > Entities;
