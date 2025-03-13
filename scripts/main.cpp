@@ -1,6 +1,7 @@
 ﻿#include <bits/stdc++.h>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 
 using namespace std;
 
@@ -136,6 +137,8 @@ int main(int argc, char* args [])
 
     window.init();
     window.cleanUp();
+    TTF_Quit();
+    IMG_Quit();
     SDL_Quit();
 
     return 0;

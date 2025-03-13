@@ -50,9 +50,10 @@ SDL_Texture* RenderWindow::loadText(const char* source, const char* word, int si
 
     SDL_FreeSurface(surface);
 
+    TTF_CloseFont(loadFont);
+
     return texture;
 }
-
 
 SDL_Texture* healthBarFrame;
 SDL_Texture* heartIcon;
@@ -156,7 +157,7 @@ void RenderWindow::renderWave(int wave)
     SDL_Rect* src = NULL;
     SDL_Rect dest = makeRec(SCREEN_WIDTH - 150, SCREEN_HEIGHT - 30, tmpW, tmpH);
 
-    SDL_RenderCopyEx(renderer, waveText, src, &dest, 0, NULL, SDL_FLIP_NONE);
+    SDL_RenderCopy(renderer, waveText, src, &dest);
 }
 
 void RenderWindow::display()
@@ -166,5 +167,6 @@ void RenderWindow::display()
 
 void RenderWindow::cleanUp()
 {
+     SDL_DestroyRenderer(renderer);
      SDL_DestroyWindow(window);
 }
