@@ -49,6 +49,9 @@ Map::Map(RenderWindow &window)
         obstacleHitBox.push_back(Obstacle(368, 110, 16, 1, Layer[2]));
         obstacleHitBox.push_back(Obstacle(401, 111, 14, 1, Layer[2]));
         obstacleHitBox.push_back(Obstacle(63, 334, 64, 1, Layer[2]));
+        obstacleHitBox.push_back(Obstacle(438, 106, 19, 1, Layer[2]));
+        obstacleHitBox.push_back(Obstacle(438, 105, 19, 1, Layer[2]));
+
         obstacleHitBox.push_back(Obstacle(112, 344, 16, 7, Layer[3]));
         obstacleHitBox.push_back(Obstacle(368, 111, 16, 1, Layer[3]));
         obstacleHitBox.push_back(Obstacle(389, 264, 4, 1, Layer[3]));
@@ -78,6 +81,9 @@ Map::Map(RenderWindow &window)
         obstacleDisplay.push_back(makeRec(368, 96, 16, 16));
         obstacleDisplay.push_back(makeRec(401, 97, 14, 15));
         obstacleDisplay.push_back(makeRec(62, 287, 66, 51));
+        obstacleDisplay.push_back(makeRec(432, 64, 32, 48));
+        obstacleDisplay.push_back(makeRec(400, 0, 96, 64));
+
         obstacleDisplay.push_back(makeRec(112, 336, 16, 16));
         obstacleDisplay.push_back(makeRec(368, 96, 16, 16));
         obstacleDisplay.push_back(makeRec(384, 240, 16, 32));

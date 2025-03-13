@@ -17,15 +17,17 @@ int maxFrames[4];
 
 SDL_Rect swordFrame[4][2];
 
+int maxHP = 100;
+
 Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex)
 :Entity(srcX, srcY, srcW, srcH, desX, desY, desW, desH, tex)
 {
 
     movementSpeed = 2.5;
 
-    healthPoints = 100;
+    healthPoints = maxHP;
 
-    attackingDamage = 20;
+    attackingDamage = 10;
 
     healthBar.x = 0; healthBar.y = 0;
     healthBar.w = 100; healthBar.h = 14;
@@ -100,8 +102,6 @@ bool Player::checkDeath()
 {
     if (healthPoints <= 0)
         return true;
-    if (healthPoints < 100)
-        healthPoints += 0.01;
     return false;
 }
 
@@ -120,9 +120,16 @@ float Player::getAttackingDamage()
     return attackingDamage;
 }
 
+void Player::levelUp()
+{
+     maxHP += 10;
+     healthPoints = maxHP;
+     attackingDamage += 5;
+}
+
 SDL_Rect Player::getHealthBar()
 {
-    healthBar.w = max(0, int(healthPoints));
+    healthBar.w = (healthPoints / maxHP * 100);
     return healthBar;
 }
 

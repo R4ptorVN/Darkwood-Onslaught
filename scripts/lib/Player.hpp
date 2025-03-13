@@ -17,14 +17,15 @@ class Player: public Entity
         void setStateTexture(int x);
         bool isAttacking();
         float getAttackingDamage();
+        void levelUp();
         SDL_Rect getHealthBar();
         SDL_Rect getHitBox();
         SDL_Rect getRenderBoxValues();
         SDL_Rect getSwordBox(int box);
         void moveCharacter();
         void updateFrame(float x, float y);
-        void updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameTime, bool &gameRunning);
         bool outOfMap();
+        void updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameTime, bool &gameRunning);
 
     private:
         float movementSpeed;

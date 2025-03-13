@@ -1,7 +1,5 @@
 #include <iostream>
 
-#include "lib/Functions.hpp"
-
 using namespace std;
 
 #include "lib/RenderWindow.hpp"
@@ -29,6 +27,32 @@ SDL_Texture* RenderWindow::loadTexture(const char* p_filePath)
 
     return texture;
 }
+
+float tmpW = -1, tmpH = -1;
+SDL_Texture* RenderWindow::loadText(const char* source, const char* word, int size, SDL_Color color)
+{
+    TTF_Font* loadFont = TTF_OpenFont(source, size);
+    if (loadFont == NULL)
+        SDL_Log("Failed to load font");
+
+    SDL_Texture* texture = NULL;
+    SDL_Surface* surface = TTF_RenderText_Solid(loadFont, word, color);
+    if (surface == NULL)
+        SDL_Log("Failed to render text surface");
+
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    if (texture != NULL)
+    {
+        tmpW = surface->w;
+        tmpH = surface->h;
+    }
+
+    SDL_FreeSurface(surface);
+
+    return texture;
+}
+
 
 SDL_Texture* healthBarFrame;
 SDL_Texture* heartIcon;
@@ -103,7 +127,7 @@ void RenderWindow::renderEntities(SDL_Rect &camera)
         renderEntity(Entities[i].first.first, Entities[i].first.second, Entities[i].second, camera);
 }
 
-void RenderWindow::renderHealthBar(SDL_Rect &healthBar, SDL_Rect &camera)
+void RenderWindow::renderHealthBar(SDL_Rect &healthBar)
 {
     healthBar.x = 30; healthBar.y = SCREEN_HEIGHT - 30;
 
@@ -111,23 +135,28 @@ void RenderWindow::renderHealthBar(SDL_Rect &healthBar, SDL_Rect &camera)
     SDL_RenderFillRect(renderer, &healthBar);
     SDL_RenderDrawRect(renderer, &healthBar);
 
-    SDL_Rect srcFrame;
-    srcFrame.x = 0; srcFrame.y = 0;
-    srcFrame.w = 52; srcFrame.h = 9;
-
-    SDL_Rect destFrame;
-    destFrame.x = 30; destFrame.y = SCREEN_HEIGHT - 30;
-    destFrame.w = 100; destFrame.h = 14;
+    SDL_Rect srcFrame = makeRec(0, 0, 52, 9);
+    SDL_Rect destFrame = makeRec(30, SCREEN_HEIGHT - 30, 100, 14);
 
     SDL_RenderCopyEx(renderer, healthBarFrame, &srcFrame, &destFrame, 0, NULL, SDL_FLIP_NONE);
 
-    srcFrame.x = 0; srcFrame.y = 0;
-    srcFrame.w = 13; srcFrame.h = 12;
-
-    destFrame.x = 12; destFrame.y = SCREEN_HEIGHT - 35;
-    destFrame.w = 26; destFrame.h = 24;
+    srcFrame = makeRec(0, 0, 13, 12);
+    destFrame = makeRec(12, SCREEN_HEIGHT - 35, 26, 24);
 
     SDL_RenderCopyEx(renderer, heartIcon, &srcFrame, &destFrame, 0, NULL, SDL_FLIP_NONE);
+}
+
+void RenderWindow::renderWave(int wave)
+{
+    SDL_Color textColor = {0, 0, 0};
+    string strWord = "Wave:" + to_string(wave);
+    const char *Word = strWord.c_str();
+    SDL_Texture* waveText = loadText("resources/PublicPixel.ttf", Word, 20, textColor);
+
+    SDL_Rect* src = NULL;
+    SDL_Rect dest = makeRec(SCREEN_WIDTH - 150, SCREEN_HEIGHT - 30, tmpW, tmpH);
+
+    SDL_RenderCopyEx(renderer, waveText, src, &dest, 0, NULL, SDL_FLIP_NONE);
 }
 
 void RenderWindow::display()

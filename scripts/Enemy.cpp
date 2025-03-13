@@ -3,9 +3,6 @@
 
 using namespace std;
 
-const int EnemiesLimit = 15;
-
-
 Enemy::Enemy(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex)
 :Entity(srcX, srcY, srcW, srcH, desX, desY, desW, desH, tex)
 {
@@ -120,9 +117,27 @@ bool Enemy::checkDeath()
 
 
 float lastEnemyTime = 0;
+
+int EnemiesLimit = 10;
+int EnemiesCount = 0;
+int EnemiesLeft = 0;
+int wave = 1;
+
+void newWave()
+{
+	wave++;
+	EnemiesCount = 0;
+	EnemiesLimit += 5;
+}
+
+int getWave()
+{
+	return wave;
+}
+
 void buildEnemies(float currentFrameTime)
 {
-	if ((int)Enemies.size() == EnemiesLimit)
+	if (EnemiesCount == EnemiesLimit)
 		return;
 
     if (currentFrameTime - lastEnemyTime > 3000)
@@ -165,6 +180,9 @@ void buildEnemies(float currentFrameTime)
     	Enemy skeleton(16, 40, 32, 4, srcX, srcY, 32 * 1.25, 4 * 1.25, skeletonWarrior[0]);
     	skeleton.setHealthPoints(60);
     	Enemies.push_back(skeleton);
+
+    	EnemiesCount++;
+    	EnemiesLeft++;
 
     	lastEnemyTime = currentFrameTime;
     }
@@ -412,6 +430,13 @@ void checkDamageEnemies(Player& player)
 
 void moveEnemies(Player &player, vector<Entity> &Obstacles, float currentFrameTime)
 {
+	if (EnemiesLeft == 0 && EnemiesCount == EnemiesLimit)
+	{
+		newWave();
+		player.levelUp();
+		return;
+	}
+
 	damageBoxes.clear();
 	for (int i = 0; i < Enemies.size(); i++)
 	{
@@ -421,6 +446,8 @@ void moveEnemies(Player &player, vector<Entity> &Obstacles, float currentFrameTi
 			swap(Enemies[i], Enemies.back());
 			Enemies.pop_back();
 			i--;
+
+			EnemiesLeft--;
 		}
 	}
 }

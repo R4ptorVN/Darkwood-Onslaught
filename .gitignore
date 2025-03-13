@@ -2,6 +2,7 @@
 cmake-build-debug/*
 !cmake-build-debug/SDL2.dll
 !cmake-build-debug/SDL2_image.dll
+!cmake-build-debug/SDL2_ttf.dll
 !cmake-build-debug/resources/
 !cmake-build-debug/PROJECT_NAME.exe
 # cmake/

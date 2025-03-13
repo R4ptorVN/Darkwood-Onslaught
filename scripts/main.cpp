@@ -20,10 +20,10 @@ int main(int argc, char* args [])
         SDL_Log("Failed to initialize SDL2");
     if (!(IMG_Init(IMG_INIT_PNG)))
         SDL_Log("Failed to initialize SDL2_image");
+    if (TTF_Init() == -1)
+        SDL_Log("Failed to initialize SDL2_ttf");
 
     RenderWindow window("GAME v1.0");
-
-    SDL_Texture* wave = window.loadTexture("resources/Wave.png");
 
     SDL_Rect camera;
 
@@ -34,7 +34,6 @@ int main(int argc, char* args [])
     Player player = setupPlayerTexture(window);
 
     window.setUpHealthBar();
-
 
     bool gameRunning = true;
 
@@ -116,7 +115,10 @@ int main(int argc, char* args [])
         window.renderEntities(camera);
 
         SDL_Rect healthBar = player.getHealthBar();
-        window.renderHealthBar(healthBar, camera);
+        window.renderHealthBar(healthBar);
+
+        int wave = getWave();
+        window.renderWave(wave);
 
         window.display();
 

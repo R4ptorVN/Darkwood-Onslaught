@@ -55,6 +55,8 @@ class Enemy : public Entity
 
 void setupEnemyTexture(RenderWindow& window);
 
+int getWave();
+
 void buildEnemies(float currentFrameTime);
 
 vector<Enemy> getEnemies();
