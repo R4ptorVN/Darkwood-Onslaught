@@ -89,7 +89,7 @@ int main(int argc, char* args [])
 
         spawnEnemies(currentFrameTime);
 
-        moveEnemies(player, map.getHitBoxes(), currentFrameTime);
+        updateEnemies(player, map.getHitBoxes(), currentFrameTime);
 
         checkContactPlayer(player);
 

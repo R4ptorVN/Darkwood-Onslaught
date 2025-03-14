@@ -5,8 +5,15 @@ using namespace std;
 
 SDL_Texture* skeletonTexture[5];
 SDL_Texture* orcTexture[5];
+
+SDL_Texture* projectileTexture[1];
+
+vector<Entity*> Projectiles;
+
 vector<Enemy*> Enemies;
 
+SDL_Rect spikes[8];
+float srcXSpikeFrames[30];
 
 void setupEnemyTexture(RenderWindow& window)
 {
@@ -18,8 +25,22 @@ void setupEnemyTexture(RenderWindow& window)
 
 	orcTexture[0] = window.loadTexture("resources/Enemies/Orc/orcWalking.png");
 	orcTexture[1] = window.loadTexture("resources/Enemies/Orc/orcAttacking.png");
+	orcTexture[2] = window.loadTexture("resources/Enemies/Orc/orcSummonSpike.png");
 	orcTexture[3] = window.loadTexture("resources/Enemies/Orc/orcDamaged.png");
 	orcTexture[4] = window.loadTexture("resources/Enemies/Orc/orcDeath.png");
+
+	projectileTexture[0] = window.loadTexture("resources/Enemies/Orc/orcSpike.png");
+
+	spikes[0] = makeRec(5, 56, 10, 3);
+	spikes[1] = makeRec(26, 45, 10, 3);
+	spikes[2] = makeRec(35, 61, 10, 3);
+	spikes[3] = makeRec(46, 75, 10, 3);
+	spikes[4] = makeRec(48, 34, 10, 3);
+	spikes[5] = makeRec(57, 49, 10, 3);
+	spikes[6] = makeRec(69, 64, 10, 3);
+	spikes[7] = makeRec(89, 53, 10, 3);
+
+
 }
 
 Enemy::Enemy(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex)
@@ -32,10 +53,6 @@ Enemy::Enemy(float srcX, float srcY, float srcW, float srcH, float desX, float d
 	lastFrameTime = lastFramePos = 0;
 
 	state = 0;
-
-	targetX = targetY = 0;
-	randomValueX = (mt() % 15) - (mt() % 15);
-	randomValueY = (mt() % 15) - (mt() % 15);
 
 	frameDuration = 0;
 
@@ -84,9 +101,9 @@ void newWave()
 {
 	wave++;
 	EnemiesCount = 0;
-	EnemiesLimit = (wave * 5) + (wave / 3);
+	EnemiesLimit = (wave * 5 + wave / 3);
 	EnemiesReserve.clear();
-	for (int i = 1; i <= 5 * wave; i++)
+	for (int i = 1; i <= wave * 5; i++)
 		 EnemiesReserve.push_back(0);
 	for (int i = 1; i <= wave / 3; i++)
 		 EnemiesReserve.push_back(1);
@@ -206,7 +223,7 @@ void checkDamageEnemies(Player& player)
 	}
 }
 
-void moveEnemies(Player &player, vector<Entity> &Obstacles, float currentFrameTime)
+void updateEnemies(Player &player, vector<Entity> &Obstacles, float currentFrameTime)
 {
 	if (EnemiesLeft == 0 && EnemiesCount == EnemiesLimit)
 	{
@@ -218,11 +235,14 @@ void moveEnemies(Player &player, vector<Entity> &Obstacles, float currentFrameTi
 	damageBoxes.clear();
 	for (Enemy *e : Enemies)
 	{
+		if (Projectile* enemy = dynamic_cast<Projectile*>(e))
+			enemy->updateEnemy(currentFrameTime);
+
 		if (Skeleton* enemy = dynamic_cast<Skeleton*>(e))
-			enemy->moveEnemy(player, Obstacles, currentFrameTime);
+			enemy->updateEnemy(player, Obstacles, currentFrameTime);
 
 		if (Orc* enemy = dynamic_cast<Orc*>(e))
-			enemy->moveEnemy(player, Obstacles, currentFrameTime);
+			enemy->updateEnemy(player, Obstacles, currentFrameTime);
 	}
 
 	for (int i = 0; i < Enemies.size(); i++)
@@ -252,12 +272,68 @@ void renderEnemies(RenderWindow& window, SDL_Rect &camera)
 		 window.render(*e, camera);
 }
 
+int cnt = 0;
+Projectile::Projectile(int type, float srcX, float srcY, float desX, float desY)
+:Enemy(srcX, srcY, 0, 0, desX, desY, 0, 0, NULL)
+{
+	if (type == 1)
+	{
+		maxFrames[4] = 35;
+
+		srcXFrames[4][0] = srcX;
+		srcYFrames[4] = srcY;
+		srcWFrames[4] = 10;
+		srcHFrames[4] = 3;
+
+		for (int i = 1; i < maxFrames[4]; i++)
+			srcXFrames[4][i] = srcXFrames[4][i - 1] + 99;
+
+		renderBox[4] = makeRec(0, -34, 10, 37);
+
+
+		hitBox.x = desX + (1 * 1.25);
+		hitBox.y = desY - (22 * 1.25);
+		hitBox.w = 8 * 1.25;
+		hitBox.h = 12 * 1.25;
+	}
+
+	setTex(projectileTexture[type - 1]);
+
+	state = 4;
+
+	frameDuration = maxFrames[4];
+}
+
+void Projectile::updateEnemy(float currentFrameTime)
+{
+	if (currentFrameTime - lastFrameTime > 130)
+	{
+		if (frameDuration > 0)
+			frameDuration--;
+
+		frame++;
+		frame %= maxFrames[state];
+
+		updateFrame(srcXFrames[state][frame], srcYFrames[state], srcWFrames[state], srcHFrames[state]);
+
+
+		lastFrameTime = currentFrameTime;
+	}
+
+	if (frame > 6 && frame < 16)
+		damageBoxes.push_back({hitBox, 0.5});
+}
+
 Skeleton::Skeleton(float desX, float desY)
 :Enemy(32, 41, 16, 4, desX, desY, 16 * 1.25, 4 * 1.25, skeletonTexture[0])
 {
 	movementSpeed = 1;
 
 	healthPoints = 60;
+
+	targetX = targetY = 0;
+	randomValueX = (mt() % 15) - (mt() % 15);
+	randomValueY = (mt() % 15) - (mt() % 15);
 
 	maxFrames[0] = 8;
 	maxFrames[1] = 11;
@@ -351,7 +427,7 @@ void Skeleton::checkDamageEnemy(Player &player)
 	}
 }
 
-void Skeleton::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFrameTime)
+void Skeleton::updateEnemy(Player &player, vector<Entity> &Obstacles, float currentFrameTime)
 {
 
 	if (currentFrameTime - lastFramePos > 550)
@@ -381,7 +457,7 @@ void Skeleton::moveEnemy(Player &player, vector<Entity> &Obstacles, float curren
 		}
 		else if (actionCooldown == 0 && abs(targetX - getDesX()) <= 55 && abs(targetY - getDesY()) <= 35)
 		{
-			actionCooldown = 200;
+			actionCooldown = 250;
 
 			state = 1 + (mt() % 2);
 			frame = 0;
@@ -394,10 +470,10 @@ void Skeleton::moveEnemy(Player &player, vector<Entity> &Obstacles, float curren
 			frame %= maxFrames[0];
 			updateFrame(srcXFrames[state][frame], srcYFrames[state], srcWFrames[state], srcHFrames[state]);
 		}
-
-		if (actionCooldown > 0)
-			actionCooldown--;
 	}
+
+	if (actionCooldown > 0)
+		actionCooldown--;
 
 	setTex(skeletonTexture[state]);
 
@@ -504,8 +580,13 @@ Orc::Orc(float desX, float desY)
 
 	healthPoints = 300;
 
+	targetX = targetY = 0;
+	randomValueX = (mt() % 15) - (mt() % 15);
+	randomValueY = (mt() % 15) - (mt() % 15);
+
 	maxFrames[0] = 8;
 	maxFrames[1] = 10;
+	maxFrames[2] = 9;
 	maxFrames[3] = 1;
 	maxFrames[4] = 7;
 
@@ -523,6 +604,13 @@ Orc::Orc(float desX, float desY)
 	for (int i = 1; i < maxFrames[1]; i++)
 		srcXFrames[1][i] = srcXFrames[1][i - 1] + 176;
 
+	srcXFrames[2][0] = 32;
+	srcYFrames[2] = 117;
+	srcWFrames[2] = 32;
+	srcHFrames[2] = 5;
+	for (int i = 1; i < maxFrames[2]; i++)
+		srcXFrames[2][i] = srcXFrames[2][i - 1] + 96;
+
 	srcXFrames[3][0] = 32;
 	srcYFrames[3] = 79;
 	srcWFrames[3] = 48;
@@ -535,9 +623,9 @@ Orc::Orc(float desX, float desY)
 	for (int i = 1; i < maxFrames[4]; i++)
 		srcXFrames[4][i] = srcXFrames[4][i - 1] + 96;
 
-
 	renderBox[0] = makeRec(-48, -68, 128, 80);
 	renderBox[1] = makeRec(-64, -114, 176, 128);
+	renderBox[2] = makeRec(-32, -117, 96, 126);
 	renderBox[3] = makeRec(-32, -79, 112, 91);
 	renderBox[4] = makeRec(-32, -75, 96, 84);
 }
@@ -584,7 +672,7 @@ void Orc::checkDamageEnemy(Player &player)
 	}
 }
 
-void Orc::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFrameTime)
+void Orc::updateEnemy(Player &player, vector<Entity> &Obstacles, float currentFrameTime)
 {
 
 	if (currentFrameTime - lastFramePos > 550)
@@ -614,9 +702,18 @@ void Orc::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFram
 		}
 		else if (actionCooldown == 0 && abs(targetX - getDesX()) <= 90 && abs(targetY - getDesY()) <= 35)
 		{
-			actionCooldown = 200;
+			actionCooldown = 350;
 
 			state = 1;
+			frame = 0;
+			updateFrame(srcXFrames[state][frame], srcYFrames[state], srcWFrames[state], srcHFrames[state]);
+			frameDuration = maxFrames[state];
+		}
+		else if (actionCooldown == 0 && abs(targetX - getDesX()) <= 200 && abs(targetY - getDesY()) <= 200)
+		{
+			actionCooldown = 350;
+
+			state = 2;
 			frame = 0;
 			updateFrame(srcXFrames[state][frame], srcYFrames[state], srcWFrames[state], srcHFrames[state]);
 			frameDuration = maxFrames[state];
@@ -627,10 +724,10 @@ void Orc::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFram
 			frame %= maxFrames[0];
 			updateFrame(srcXFrames[state][frame], srcYFrames[state], srcWFrames[state], srcHFrames[state]);
 		}
-
-		if (actionCooldown > 0)
-			actionCooldown--;
 	}
+
+	if (actionCooldown > 0)
+		actionCooldown--;
 
 	setTex(orcTexture[state]);
 
@@ -715,6 +812,19 @@ void Orc::moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFram
 
 				damageBoxes.push_back({axe, 8});
 			}
+
+			break;
+		}
+
+		case 2:
+		{
+			if (actionCooldown == 349)
+			{
+				for (int i = 0; i < 8; i++)
+					Enemies.push_back(new Projectile(1, spikes[i].x, spikes[i].y, player.getHitBox().x + (spikes[i].x * 1.25) - 60, player.getHitBox().y + (spikes[i].y * 1.25) - 20));
+			}
+
+			break;
 		}
 	}
 

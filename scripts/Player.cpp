@@ -95,7 +95,10 @@ float Player::getHealthPoints()
 
 void Player::setHealthPoints(float x)
 {
-    healthPoints = x;
+    if (x < 0)
+        healthPoints = 0;
+    else
+        healthPoints = x;
 }
 
 bool Player::checkDeath()

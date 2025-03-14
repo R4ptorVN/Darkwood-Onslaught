@@ -45,7 +45,7 @@ class Enemy : public Entity
 
         int maxFrames[5];
 
-        float srcXFrames[5][20];
+        float srcXFrames[5][35];
         float srcYFrames[5];
         float srcWFrames[5];
         float srcHFrames[5];
@@ -63,13 +63,24 @@ void spawnEnemies(float currentFrameTime);
 
 vector<Enemy> getEnemies();
 
-void moveEnemies(Player &player, vector<Entity> &Obstacles, float currentFrameTime);
+void updateEnemies(Player &player, vector<Entity> &Obstacles, float currentFrameTime);
 
 void checkDamageEnemies(Player& player);
 
 void checkContactPlayer(Player &player);
 
 void renderEnemies(RenderWindow& window, SDL_Rect &camera);
+
+class Projectile : public Enemy
+{
+    public:
+        Projectile(int type, float srcX, float srcY, float desX, float desY);
+        void updateEnemy(float currentFrameTime);
+
+    protected:
+        SDL_Rect hitBox;
+
+};
 
 class Skeleton : public Enemy
 {
@@ -78,7 +89,7 @@ class Skeleton : public Enemy
         SDL_Rect getHitBox();
         SDL_Rect getBodyBox();
         void checkDamageEnemy(Player &player);
-        void moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFrameTime);
+        void updateEnemy(Player &player, vector<Entity> &Obstacles, float currentFrameTime);
 
 };
 
@@ -89,5 +100,5 @@ class Orc : public Enemy
         SDL_Rect getHitBox();
         SDL_Rect getBodyBox();
         void checkDamageEnemy(Player &player);
-        void moveEnemy(Player &player, vector<Entity> &Obstacles, float currentFrameTime);
+        void updateEnemy(Player &player, vector<Entity> &Obstacles, float currentFrameTime);
 };
