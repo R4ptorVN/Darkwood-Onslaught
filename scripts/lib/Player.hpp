@@ -50,6 +50,8 @@ class Player: public Entity
 
         float lastFrameTime;
 
+        int frameDistance[5];
+
 };
 
 Player setupPlayerTexture(RenderWindow& window);

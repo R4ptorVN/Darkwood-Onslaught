@@ -11,9 +11,9 @@ const float frameDistanceY = 240;
 
 float srcXFrames[20];
 
-float srcYFrames[4][4];
+float srcYFrames[5][4];
 
-int maxFrames[4];
+int maxFrames[5];
 
 SDL_Rect swordFrame[4][2];
 
@@ -49,10 +49,17 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
 
     lastFrameTime = 0;
 
+    frameDistance[0] = 100;
+    frameDistance[1] = 100;
+    frameDistance[2] = 100;
+    frameDistance[3] = 115;
+    frameDistance[4] = 100;
+
     maxFrames[0] = 5;
     maxFrames[1] = 8;
     maxFrames[2] = 6;
-    maxFrames[3] = 5;
+    maxFrames[3] = 6;
+    maxFrames[4] = 5;
 
     srcXFrames[0] = 20;
     for (int i = 1; i < 20; i++)
@@ -61,7 +68,8 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
     srcYFrames[0][0] = 85;
     srcYFrames[1][0] = 37;
     srcYFrames[2][0] = 133;
-    srcYFrames[3][0] = 229;
+    srcYFrames[3][0] = 181;
+    srcYFrames[4][0] = 229;
     for (int i = 0; i < 4; i++)
         for (int j = 1; j < 4; j++)
              srcYFrames[i][j] = srcYFrames[i][j - 1] + frameDistanceY;
@@ -125,7 +133,7 @@ float Player::getAttackingDamage()
 
 void Player::levelUp()
 {
-     maxHP += 10;
+     maxHP += 5;
      healthPoints = maxHP;
      attackingDamage += 5;
 }
@@ -207,13 +215,21 @@ void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameT
     {
         if (checkDeath())
         {
-            state = 3;
+            state = 4;
             frameDuration = maxFrames[state] + 5;
 
             frame = 0;
             updateFrame(srcXFrames[frame], srcYFrames[state][movingDirection]);
             if (movingDirection == 2)
                 setFlip(SDL_FLIP_HORIZONTAL);
+        }
+        else if (keyState[SDL_SCANCODE_K])
+        {
+            state = 3;
+            frameDuration = maxFrames[state];
+
+            frame = 0;
+            updateFrame(srcXFrames[frame], srcYFrames[state][movingDirection]);
         }
         else if (keyState[SDL_SCANCODE_J])
         {
@@ -263,14 +279,14 @@ void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameT
         }
     }
 
-    if (currentFrameTime - lastFrameTime > 100)
+    if (currentFrameTime - lastFrameTime > frameDistance[state])
     {
         if (frameDuration > 0)
             frameDuration--;
 
         frame++;
 
-        if (state == 3 && frame == maxFrames[state])
+        if (state == 4 && frame == maxFrames[state])
             frame--;
         else
             frame %= maxFrames[state];
@@ -313,7 +329,7 @@ void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameT
                 break;
             }
 
-            case 3:
+            case 4:
             {
                  if (frameDuration == 0)
                      gameRunning = false;

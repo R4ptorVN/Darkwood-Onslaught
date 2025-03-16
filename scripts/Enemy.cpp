@@ -101,7 +101,7 @@ void newWave()
 {
 	wave++;
 	EnemiesCount = 0;
-	EnemiesLimit = (wave * 5 + wave / 3);
+	EnemiesLimit = (wave * 5) + (wave / 3);
 	EnemiesReserve.clear();
 	for (int i = 1; i <= wave * 5; i++)
 		 EnemiesReserve.push_back(0);
@@ -822,6 +822,8 @@ void Orc::updateEnemy(Player &player, vector<Entity> &Obstacles, float currentFr
 			{
 				for (int i = 0; i < 8; i++)
 					Enemies.push_back(new Projectile(1, spikes[i].x, spikes[i].y, player.getHitBox().x + (spikes[i].x * 1.25) - 60, player.getHitBox().y + (spikes[i].y * 1.25) - 20));
+
+				EnemiesLeft += 8;
 			}
 
 			break;
