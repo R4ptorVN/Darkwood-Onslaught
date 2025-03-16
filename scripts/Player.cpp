@@ -70,7 +70,7 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
     srcYFrames[2][0] = 133;
     srcYFrames[3][0] = 181;
     srcYFrames[4][0] = 229;
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
         for (int j = 1; j < 4; j++)
              srcYFrames[i][j] = srcYFrames[i][j - 1] + frameDistanceY;
 
