@@ -55,12 +55,14 @@ SDL_Texture* RenderWindow::loadText(const char* source, const char* word, int si
     return texture;
 }
 
-SDL_Texture* healthBarFrame;
+SDL_Texture* barFrame;
 SDL_Texture* heartIcon;
-void RenderWindow::setUpHealthBar()
+SDL_Texture* skillIcon;
+void RenderWindow::setUpHUD()
 {
-     healthBarFrame = loadTexture("resources/Miscellaneous/Bar.png");
+     barFrame = loadTexture("resources/Miscellaneous/Bar.png");
      heartIcon = loadTexture("resources/Miscellaneous/Heart.png");
+     skillIcon = loadTexture("resources/Miscellaneous/Skill.png");
 }
 
 void RenderWindow::init()
@@ -128,23 +130,39 @@ void RenderWindow::renderEntities(SDL_Rect &camera)
         renderEntity(Entities[i].first.first, Entities[i].first.second, Entities[i].second, camera);
 }
 
-void RenderWindow::renderHealthBar(SDL_Rect &healthBar)
+void RenderWindow::renderBars(SDL_Rect &healthBar, SDL_Rect &manaBar)
 {
-    healthBar.x = 30; healthBar.y = SCREEN_HEIGHT - 30;
+    healthBar.x = 30; healthBar.y = SCREEN_HEIGHT - 60;
 
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 1);
     SDL_RenderFillRect(renderer, &healthBar);
     SDL_RenderDrawRect(renderer, &healthBar);
 
     SDL_Rect srcFrame = makeRec(0, 0, 52, 9);
-    SDL_Rect destFrame = makeRec(30, SCREEN_HEIGHT - 30, 100, 14);
+    SDL_Rect destFrame = makeRec(29, SCREEN_HEIGHT - 60, 101, 14);
 
-    SDL_RenderCopyEx(renderer, healthBarFrame, &srcFrame, &destFrame, 0, NULL, SDL_FLIP_NONE);
+    SDL_RenderCopyEx(renderer, barFrame, &srcFrame, &destFrame, 0, NULL, SDL_FLIP_NONE);
 
     srcFrame = makeRec(0, 0, 13, 12);
-    destFrame = makeRec(12, SCREEN_HEIGHT - 35, 26, 24);
+    destFrame = makeRec(12, SCREEN_HEIGHT - 65, 26, 24);
 
     SDL_RenderCopyEx(renderer, heartIcon, &srcFrame, &destFrame, 0, NULL, SDL_FLIP_NONE);
+
+    manaBar.x = 30; manaBar.y = SCREEN_HEIGHT - 30;
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 1);
+    SDL_RenderFillRect(renderer, &manaBar);
+    SDL_RenderDrawRect(renderer, &manaBar);
+
+    srcFrame = makeRec(0, 0, 52, 9);
+    destFrame = makeRec(29, SCREEN_HEIGHT - 30, 101, 14);
+
+    SDL_RenderCopyEx(renderer, barFrame, &srcFrame, &destFrame, 0, NULL, SDL_FLIP_NONE);
+
+    srcFrame = makeRec(0, 0, 360, 360);
+    destFrame = makeRec(12, SCREEN_HEIGHT - 35, 23, 22);
+
+    SDL_RenderCopyEx(renderer, skillIcon, &srcFrame, &destFrame, 0, NULL, SDL_FLIP_NONE);
 }
 
 void RenderWindow::renderWave(int wave)

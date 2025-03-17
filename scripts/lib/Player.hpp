@@ -13,15 +13,18 @@ class Player: public Entity
         Player(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex);
         float getHealthPoints();
         void setHealthPoints(float x);
+        void increaseMana();
         bool checkDeath();
         void setStateTexture(int x);
-        bool isAttacking();
+        int getAttackingState();
         float getAttackingDamage();
         void levelUp();
         SDL_Rect getHealthBar();
+        SDL_Rect getManaBar();
         SDL_Rect getHitBox();
         SDL_Rect getRenderBoxValues();
         SDL_Rect getSwordBox(int box);
+        SDL_Rect getSkillBox(int box);
         void moveCharacter();
         void updateFrame(float x, float y);
         bool outOfMap();
@@ -29,7 +32,9 @@ class Player: public Entity
 
     protected:
         float movementSpeed;
-        bool movingLeft, movingRight, movingUp, movingDown, attacking;
+        bool movingLeft, movingRight, movingUp, movingDown;
+
+        int attackingState;
 
         int frame;
 
@@ -43,15 +48,13 @@ class Player: public Entity
         int movingDirections;
 
         float healthPoints;
+        float manaPoints;
 
         float attackingDamage;
-
-        SDL_Rect healthBar;
 
         float lastFrameTime;
 
         int frameDistance[5];
-
 };
 
 Player setupPlayerTexture(RenderWindow& window);

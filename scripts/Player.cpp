@@ -17,7 +17,12 @@ int maxFrames[5];
 
 SDL_Rect swordFrame[4][2];
 
+SDL_Rect skillFrame[4];
+
 int maxHP = 100;
+
+SDL_Rect healthBar;
+SDL_Rect manaBar;
 
 Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex)
 :Entity(srcX, srcY, srcW, srcH, desX, desY, desW, desH, tex)
@@ -26,15 +31,19 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
     movementSpeed = 2.5;
 
     healthPoints = maxHP;
+    manaPoints = 0;
 
-    attackingDamage = 10;
+    attackingDamage = 12;
 
     healthBar.x = 0; healthBar.y = 0;
     healthBar.w = 100; healthBar.h = 14;
 
+    manaBar.x = 0; manaBar.y = 0;
+    manaBar.w = 100; manaBar.h = 14;
+
     movingLeft = movingRight = movingUp = movingDown = false;
 
-    attacking = false;
+    attackingState = 0;
 
     frame = 0;
 
@@ -82,6 +91,11 @@ Player::Player(float srcX, float srcY, float srcW, float srcH, float desX, float
     swordFrame[2][1] = makeRec(-20, -37, 48, 16);
     swordFrame[3][0] = makeRec(-20, -37, 48, 16);
     swordFrame[3][1] = makeRec(-12, -37, 16, 48);
+
+    skillFrame[0] = makeRec(-68, -85, 71, 77);
+    skillFrame[1] = makeRec(3, -85, 73, 77);
+    skillFrame[2] = makeRec(-68, -8, 71, 83);
+    skillFrame[3] = makeRec(3, -8, 73, 83);
 }
 
 SDL_Texture* playerTexture[2];
@@ -109,6 +123,12 @@ void Player::setHealthPoints(float x)
         healthPoints = x;
 }
 
+void Player::increaseMana()
+{
+     if (manaPoints < 20)
+         manaPoints++;
+}
+
 bool Player::checkDeath()
 {
     if (healthPoints <= 0)
@@ -121,9 +141,9 @@ void Player::setStateTexture(int x)
     textureState = x;
 }
 
-bool Player::isAttacking()
+int Player::getAttackingState()
 {
-    return attacking;
+    return attackingState;
 }
 
 float Player::getAttackingDamage()
@@ -135,12 +155,18 @@ void Player::levelUp()
 {
      maxHP += 5;
      healthPoints = maxHP;
-     attackingDamage += 5;
+     attackingDamage += 3;
 }
 
 SDL_Rect Player::getHealthBar()
 {
     healthBar.w = (healthPoints / maxHP * 100);
+    return healthBar;
+}
+
+SDL_Rect Player::getManaBar()
+{
+    healthBar.w = (manaPoints / 20 * 100);
     return healthBar;
 }
 
@@ -178,6 +204,17 @@ SDL_Rect Player::getSwordBox(int box)
     return swordBox;
 }
 
+SDL_Rect Player::getSkillBox(int box)
+{
+    SDL_Rect skillBox = getDestFrame();
+
+    skillBox.x += (skillFrame[box].x * 2);
+    skillBox.y += (skillFrame[box].y * 2);
+    skillBox.w = skillFrame[box].w * 2;
+    skillBox.h = skillFrame[box].h * 2;
+
+    return skillBox;
+}
 
 void Player::moveCharacter()
 {
@@ -223,8 +260,10 @@ void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameT
             if (movingDirection == 2)
                 setFlip(SDL_FLIP_HORIZONTAL);
         }
-        else if (keyState[SDL_SCANCODE_K])
+        else if (keyState[SDL_SCANCODE_K] && manaPoints == 20)
         {
+            manaPoints = 0;
+
             state = 3;
             frameDuration = maxFrames[state];
 
@@ -322,9 +361,19 @@ void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameT
             case 2:
             {
                 if (frame == 2)
-                    attacking = true;
+                    attackingState = 1;
                 else
-                    attacking = false;
+                    attackingState = 0;
+
+                break;
+            }
+
+            case 3:
+            {
+                if (frame == 3)
+                    attackingState = 2;
+                else
+                    attackingState = 0;
 
                 break;
             }

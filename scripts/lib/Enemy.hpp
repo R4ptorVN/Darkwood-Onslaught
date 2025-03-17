@@ -19,6 +19,9 @@ class Enemy : public Entity
         SDL_Rect getRenderBoxValues();
         void updateFrame(float x, float y, float w, float h);
         void checkDamageEnemy(Player &player);
+        void checkSkill(SDL_Rect hitBox, Player &player);
+        void moveEnemy(vector<Entity> &Obstacles);
+        void knockBackEnemy(vector<Entity> &Obstacles);
 
      protected:
         float movementSpeed;
@@ -38,6 +41,8 @@ class Enemy : public Entity
         int state;
 
         bool facingLeft;
+
+        int knockBack;
 
         int frame;
         float lastFrameTime;
