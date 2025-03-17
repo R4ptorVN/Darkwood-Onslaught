@@ -17,14 +17,14 @@ class RenderWindow
         SDL_Texture* loadText(const char* source, const char* word, int size, SDL_Color color);
         void cleanUp();
         void clear();
-        void setUpHealthBar();
+        void setUpHUD();
         void init();
         void render(Entity& p_entity, SDL_Rect &camera);
         void clearEntities();
         void pushEntities(Entity& HitBox, SDL_Rect Values, float multiplier);
         void renderEntity(Entity& HitBox, SDL_Rect Values, float multiplier, SDL_Rect& camera);
         void renderEntities(SDL_Rect &camera);
-        void renderHealthBar(SDL_Rect &healthBar);
+        void renderBars(SDL_Rect &healthBar, SDL_Rect &manaBar);
         void renderWave(int wave);
         void display();
     protected:

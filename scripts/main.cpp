@@ -30,15 +30,15 @@ int main(int argc, char* args [])
 
     Map map(window);
 
-    setupEnemyTexture(window);
+   setupEnemyTexture(window);
 
     Player player = setupPlayerTexture(window);
 
-    window.setUpHealthBar();
+    window.setUpHUD();
 
     bool gameRunning = true;
 
-    newWave();
+   newWave();
 
     SDL_Event event;
 
@@ -84,14 +84,14 @@ int main(int argc, char* args [])
 
         player.updatePlayerMovement(map.getHitBoxes(), currentFrameTime, gameRunning);
 
-        if (player.isAttacking())
-            checkDamageEnemies(player);
+         if (player.getAttackingState() > 0)
+             checkDamageEnemies(player);
 
         spawnEnemies(currentFrameTime);
 
         updateEnemies(player, map.getHitBoxes(), currentFrameTime);
 
-        checkContactPlayer(player);
+         checkContactPlayer(player);
 
         updateCamera(camera, player);
 
@@ -106,7 +106,7 @@ int main(int argc, char* args [])
         for (int i = 0; i < int(obstacleDisplay.size()); i++)
              window.pushEntities(obstaclesHitBox[i], obstacleDisplay[i], 2);
 
-         window.pushEntities(map.getFire(currentFrameTime), makeRec(0, 0, 16, 29), 2);
+        window.pushEntities(map.getFire(currentFrameTime), makeRec(0, 0, 16, 29), 2);
 
         window.pushEntities(player, player.getRenderBoxValues(), 1.75);
 
@@ -118,7 +118,8 @@ int main(int argc, char* args [])
         window.renderEntities(camera);
 
         SDL_Rect healthBar = player.getHealthBar();
-        window.renderHealthBar(healthBar);
+        SDL_Rect manaBar = player.getManaBar();
+        window.renderBars(healthBar, manaBar);
 
         int wave = getWave();
         window.renderWave(wave);

@@ -8,8 +8,6 @@ SDL_Texture* orcTexture[5];
 
 SDL_Texture* projectileTexture[1];
 
-vector<Entity*> Projectiles;
-
 vector<Enemy*> Enemies;
 
 SDL_Rect spikes[8];
@@ -39,8 +37,6 @@ void setupEnemyTexture(RenderWindow& window)
 	spikes[5] = makeRec(57, 49, 10, 3);
 	spikes[6] = makeRec(69, 64, 10, 3);
 	spikes[7] = makeRec(89, 53, 10, 3);
-
-
 }
 
 Enemy::Enemy(float srcX, float srcY, float srcW, float srcH, float desX, float desY, float desW, float desH, SDL_Texture* tex)
@@ -59,6 +55,8 @@ Enemy::Enemy(float srcX, float srcY, float srcW, float srcH, float desX, float d
 	actionCooldown = 0;
 
 	facingLeft = true;
+
+	knockBack = 0;
 }
 
 int Enemy::getState()
@@ -99,6 +97,8 @@ int wave = 0;
 vector<int> EnemiesReserve;
 void newWave()
 {
+	Enemies.clear();
+
 	wave++;
 	EnemiesCount = 0;
 	EnemiesLimit = (wave * 5) + (wave / 3);
@@ -174,8 +174,11 @@ void spawnEnemies(float currentFrameTime)
 vector<Enemy> getEnemies()
 {
 	vector<Enemy> EnemiesRef;
+	EnemiesRef.clear();
+
 	for (Enemy* e: Enemies)
 		 EnemiesRef.push_back(*e);
+
 	return EnemiesRef;
 }
 
@@ -212,6 +215,170 @@ bool checkDamagePlayer(Player& player)
 	return contact;
 }
 
+bool contact[4];
+
+void Enemy::checkSkill(SDL_Rect hitBox, Player &player)
+{
+	for (int i = 0; i < 4; i++)
+		contact[i] = false;
+
+	int contactBoxes = 0;
+
+	for (int i = 0; i < 4; i++)
+	{
+		SDL_Rect box = player.getSkillBox(i);
+
+		if (SDL_HasIntersection(&box, &hitBox))
+		{
+			contact[i] = true;
+			contactBoxes++;
+		}
+
+	}
+
+	if (contactBoxes > 0)
+	{
+		takingDamage = true;
+
+		float health = getHealthPoints();
+		health -= (player.getAttackingDamage() * 2);
+		setHealthPoints(health);
+	}
+
+	if (contactBoxes > 2)
+	{
+		if (!facingLeft)
+			knockBack = 7;
+		else
+			knockBack = 3;
+		return;
+	}
+	if (contact[0] && contact[1])
+		knockBack = 1;
+	else if (contact[1] && contact[3])
+		knockBack = 3;
+	else if (contact[2] && contact[3])
+		knockBack = 5;
+	else if (contact[0] && contact[2])
+		knockBack = 7;
+	else if (contact[0])
+		knockBack = 8;
+	else if (contact[1])
+		knockBack = 2;
+	else if (contact[2])
+		knockBack = 6;
+	else if (contact[3])
+		knockBack = 4;
+}
+
+void Enemy::moveEnemy(vector<Entity> &Obstacles)
+{
+	float curX = getDesX();
+	float curY = getDesY();
+
+	float prev_X = curX;
+	float prev_Y = curY;
+
+	if (curX > targetX + movementSpeed)
+	{
+		facingLeft = true;
+		curX -= movementSpeed;
+	}
+	else if (curX < targetX - movementSpeed)
+	{
+		facingLeft = false;
+		curX += movementSpeed;
+	}
+
+	setDesX(curX);
+
+	if (checkCollision(getDestFrame(), Obstacles))
+		setDesX(prev_X);
+
+	if (curY > targetY + movementSpeed)
+		curY -= movementSpeed;
+	else if (curY < targetY - movementSpeed)
+		curY += movementSpeed;
+
+	setDesY(curY);
+
+	if (checkCollision(getDestFrame(), Obstacles))
+		setDesY(prev_Y);
+}
+
+void Enemy::knockBackEnemy(vector<Entity> &Obstacles)
+{
+	float curX = getDesX();
+	float curY = getDesY();
+
+	float prev_X = curX;
+	float prev_Y = curY;
+
+	switch (knockBack)
+	{
+		case 1:
+		{
+			curY -= (movementSpeed * 3);
+			break;
+		}
+
+		case 2:
+		{
+			curX += (movementSpeed * 3);
+			curY -= (movementSpeed * 3);
+			break;
+		}
+
+		case 3:
+		{
+			curX += (movementSpeed * 3);
+			break;
+		}
+
+		case 4:
+		{
+			curX += (movementSpeed * 3);
+			curY += (movementSpeed * 3);
+			break;
+		}
+
+		case 5:
+		{
+			curY += (movementSpeed * 3);
+			break;
+		}
+
+		case 6:
+		{
+			curX -= (movementSpeed * 3);
+			curY += (movementSpeed * 3);
+			break;
+		}
+
+		case 7:
+		{
+			curX -= (movementSpeed * 3);
+			break;
+		}
+
+		case 8:
+		{
+			curX -= (movementSpeed * 3);
+			curY -= (movementSpeed * 3);
+			break;
+		}
+	}
+
+	setDesX(curX);
+	setDesY(curY);
+
+	if (checkCollision(getDestFrame(), Obstacles))
+	{
+		setDesX(prev_X);
+		setDesY(prev_Y);
+	}
+}
+
 void checkDamageEnemies(Player& player)
 {
 	for (Enemy* e : Enemies)
@@ -245,7 +412,7 @@ void updateEnemies(Player &player, vector<Entity> &Obstacles, float currentFrame
 			enemy->updateEnemy(player, Obstacles, currentFrameTime);
 	}
 
-	for (int i = 0; i < Enemies.size(); i++)
+	for (int i = 0; i < int(Enemies.size()); i++)
 	{
 		if ((*Enemies[i]).getState() == 4 && (*Enemies[i]).getFrameDuration() == 0)
 		{
@@ -254,6 +421,7 @@ void updateEnemies(Player &player, vector<Entity> &Obstacles, float currentFrame
 			i--;
 
 			EnemiesLeft--;
+			player.increaseMana();
 		}
 	}
 }
@@ -409,6 +577,12 @@ void Skeleton::checkDamageEnemy(Player &player)
 	if (state > 2)
 		return;
 
+	if (player.getAttackingState() == 2)
+	{
+		checkSkill(getHitBox(), player);
+		return;
+	}
+
 	SDL_Rect a1 = player.getSwordBox(0);
 	SDL_Rect a2 = player.getSwordBox(1);
 	SDL_Rect b = getHitBox();
@@ -483,7 +657,10 @@ void Skeleton::updateEnemy(Player &player, vector<Entity> &Obstacles, float curr
 		{
 			frameDuration--;
 			if (frameDuration == 0)
+			{
 				takingDamage = false;
+				knockBack = 0;
+			}
 		}
 
 		if (state < 2)
@@ -501,38 +678,7 @@ void Skeleton::updateEnemy(Player &player, vector<Entity> &Obstacles, float curr
 	{
 		case 0:
 		{
-			float curX = getDesX();
-			float curY = getDesY();
-
-			float prev_X = curX;
-			float prev_Y = curY;
-
-			if (curX > targetX + movementSpeed)
-			{
-				facingLeft = true;
-				curX -= movementSpeed;
-			}
-			else if (curX < targetX - movementSpeed)
-			{
-				facingLeft = false;
-				curX += movementSpeed;
-			}
-
-			setDesX(curX);
-
-			if (checkCollision(getDestFrame(), Obstacles))
-				setDesX(prev_X);
-
-			if (curY > targetY + movementSpeed)
-				curY -= movementSpeed;
-			else if (curY < targetY - movementSpeed)
-				curY += movementSpeed;
-
-			setDesY(curY);
-
-			if (checkCollision(getDestFrame(), Obstacles))
-				setDesY(prev_Y);
-
+			moveEnemy(Obstacles);
 			break;
 		}
 
@@ -559,6 +705,14 @@ void Skeleton::updateEnemy(Player &player, vector<Entity> &Obstacles, float curr
 
 				damageBoxes.push_back({sword, 5});
 			}
+
+			break;
+		}
+
+		case 3:
+		{
+			if (knockBack > 0)
+				knockBackEnemy(Obstacles);
 
 			break;
 		}
@@ -659,6 +813,12 @@ void Orc::checkDamageEnemy(Player &player)
 	if (state > 2)
 		return;
 
+	if (player.getAttackingState() == 2)
+	{
+		checkSkill(getHitBox(), player);
+		return;
+	}
+
 	SDL_Rect a1 = player.getSwordBox(0);
 	SDL_Rect a2 = player.getSwordBox(1);
 	SDL_Rect b = getHitBox();
@@ -737,7 +897,10 @@ void Orc::updateEnemy(Player &player, vector<Entity> &Obstacles, float currentFr
 		{
 			frameDuration--;
 			if (frameDuration == 0)
+			{
 				takingDamage = false;
+				knockBack = 0;
+			}
 		}
 
 		if (state == 4 && frame == maxFrames[4] - 1)
@@ -754,38 +917,7 @@ void Orc::updateEnemy(Player &player, vector<Entity> &Obstacles, float currentFr
 	{
 		case 0:
 		{
-			float curX = getDesX();
-			float curY = getDesY();
-
-			float prev_X = curX;
-			float prev_Y = curY;
-
-			if (curX > targetX + movementSpeed)
-			{
-				facingLeft = true;
-				curX -= movementSpeed;
-			}
-			else if (curX < targetX - movementSpeed)
-			{
-				facingLeft = false;
-				curX += movementSpeed;
-			}
-
-			setDesX(curX);
-
-			if (checkCollision(getDestFrame(), Obstacles))
-				setDesX(prev_X);
-
-			if (curY > targetY + movementSpeed)
-				curY -= movementSpeed;
-			else if (curY < targetY - movementSpeed)
-				curY += movementSpeed;
-
-			setDesY(curY);
-
-			if (checkCollision(getDestFrame(), Obstacles))
-				setDesY(prev_Y);
-
+			moveEnemy(Obstacles);
 			break;
 		}
 
@@ -825,6 +957,14 @@ void Orc::updateEnemy(Player &player, vector<Entity> &Obstacles, float currentFr
 
 				EnemiesLeft += 8;
 			}
+
+			break;
+		}
+
+		case 3:
+		{
+			if (knockBack > 0)
+				knockBackEnemy(Obstacles);
 
 			break;
 		}
