@@ -3,9 +3,6 @@ cmake-build-debug/*
 !cmake-build-debug/SDL2.dll
 !cmake-build-debug/SDL2_image.dll
 !cmake-build-debug/SDL2_ttf.dll
-!cmake-build-debug/libgcc_s_seh-1.dll
-!cmake-build-debug/libstdc++-6.dll
-!cmake-build-debug/libwinpthread-1.dll
 !cmake-build-debug/resources/
 !cmake-build-debug/PROJECT_NAME.exe
 # cmake/
