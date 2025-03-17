@@ -30,7 +30,7 @@ int main(int argc, char* args [])
 
     Map map(window);
 
-   setupEnemyTexture(window);
+    setupEnemyTexture(window);
 
     Player player = setupPlayerTexture(window);
 
@@ -38,7 +38,7 @@ int main(int argc, char* args [])
 
     bool gameRunning = true;
 
-   newWave();
+    newWave();
 
     SDL_Event event;
 
