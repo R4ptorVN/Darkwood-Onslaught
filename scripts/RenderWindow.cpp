@@ -1,3 +1,4 @@
+
 #include <iostream>
 
 using namespace std;
@@ -144,7 +145,7 @@ void RenderWindow::renderBars(SDL_Rect &healthBar, SDL_Rect &manaBar)
     SDL_RenderCopyEx(renderer, barFrame, &srcFrame, &destFrame, 0, NULL, SDL_FLIP_NONE);
 
     srcFrame = makeRec(0, 0, 13, 12);
-    destFrame = makeRec(12, SCREEN_HEIGHT - 65, 26, 24);
+    destFrame = makeRec(11, SCREEN_HEIGHT - 65, 26, 24);
 
     SDL_RenderCopyEx(renderer, heartIcon, &srcFrame, &destFrame, 0, NULL, SDL_FLIP_NONE);
 
