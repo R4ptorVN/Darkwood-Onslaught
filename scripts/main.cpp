@@ -1,19 +1,11 @@
-﻿#include <bits/stdc++.h>
-#include <SDL.h>
+﻿#include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
 using namespace std;
 
-#include "lib/RenderWindow.hpp"
-#include "lib/Entity.hpp"
-#include "lib/Player.hpp"
-#include "lib/Functions.hpp"
-#include "lib/Obstacle.hpp"
 #include "lib/Map.hpp"
-#include "lib/Enemy.hpp"
-
-void buildEnemies(RenderWindow window);
+#include "lib/Game.hpp"
 
 int main(int argc, char* args [])
 {

@@ -5,20 +5,30 @@ set(CMAKE_CXX_STANDARD 14)
 
 # Must set the path to the main.cpp, for example: scripts/main.cpp if it is inside a folder
 add_executable(${PROJECT_NAME} scripts/main.cpp
-        scripts/RenderWindow.cpp
         scripts/lib/RenderWindow.hpp
         scripts/lib/Entity.hpp
-        scripts/Entity.cpp
-        scripts/Player.cpp
         scripts/lib/Player.hpp
-        scripts/Functions.cpp
         scripts/lib/Functions.hpp
         scripts/lib/Obstacle.hpp
+        scripts/lib/Map.hpp
+        scripts/lib/Enemy.hpp
+        scripts/lib/Game.hpp
+        scripts/lib/Projectile.hpp
+        scripts/lib/Skeleton.hpp
+        scripts/lib/Goblin.hpp
+        scripts/lib/Orc.hpp
+        scripts/RenderWindow.cpp
+        scripts/Entity.cpp
+        scripts/Player.cpp
+        scripts/Functions.cpp
         scripts/Obstacle.cpp
         scripts/Map.cpp
-        scripts/lib/Map.hpp
         scripts/Enemy.cpp
-        scripts/lib/Enemy.hpp
+        scripts/Game.cpp
+        scripts/Goblin.cpp
+        scripts/Orc.cpp
+        scripts/Projectile.cpp
+        scripts/Skeleton.cpp
 )
 
 # --- SDL2 SETUP ---
