@@ -255,5 +255,5 @@ void Goblin::updateEnemy(Player &player, vector<Entity> &Obstacles, float curren
  		setFlip(SDL_FLIP_HORIZONTAL);
 
  	if (state != 4)
- 		damageBoxes.push_back({getBodyBox(), 0.5});
+ 		damageBoxes.push_back({getBodyBox(), 0.25});
 }

@@ -17,6 +17,7 @@ add_executable(${PROJECT_NAME} scripts/main.cpp
         scripts/lib/Skeleton.hpp
         scripts/lib/Goblin.hpp
         scripts/lib/Orc.hpp
+        scripts/lib/Necromancer.hpp
         scripts/RenderWindow.cpp
         scripts/Entity.cpp
         scripts/Player.cpp
@@ -29,6 +30,7 @@ add_executable(${PROJECT_NAME} scripts/main.cpp
         scripts/Orc.cpp
         scripts/Projectile.cpp
         scripts/Skeleton.cpp
+        scripts/Necromancer.cpp
 )
 
 # --- SDL2 SETUP ---

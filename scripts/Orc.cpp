@@ -240,7 +240,7 @@ void Orc::checkDamageEnemy(Player &player)
  					axe.h = 38 * 1.25;
  				}
 
- 				damageBoxes.push_back({axe, 8});
+ 				damageBoxes.push_back({axe, 6});
  			}
 
  			break;
@@ -272,5 +272,5 @@ void Orc::checkDamageEnemy(Player &player)
  		setFlip(SDL_FLIP_HORIZONTAL);
 
  	if (state != 4)
- 		damageBoxes.push_back({getBodyBox(), 0.5});
+ 		damageBoxes.push_back({getBodyBox(), 0.25});
  }

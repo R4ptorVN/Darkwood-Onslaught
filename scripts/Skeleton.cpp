@@ -245,5 +245,5 @@ SDL_Rect Skeleton::getBodyBox()
  		setFlip(SDL_FLIP_HORIZONTAL);
 
  	if (state != 4)
- 	    damageBoxes.push_back({getBodyBox(), 0.5});
+ 	    damageBoxes.push_back({getBodyBox(), 0.25});
 }

@@ -13,6 +13,7 @@ class Projectile : public Enemy
 
     protected:
         SDL_Rect hitBox;
+        int projectileType;
 
 };
 

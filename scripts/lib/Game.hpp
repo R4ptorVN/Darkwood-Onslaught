@@ -8,6 +8,7 @@ using namespace std;
 #include "Skeleton.hpp"
 #include "Goblin.hpp"
 #include "Orc.hpp"
+#include "Necromancer.hpp"
 
 void setupEnemyTexture(RenderWindow& window);
 

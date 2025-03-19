@@ -12,6 +12,7 @@ void setupEnemyTexture(RenderWindow& window)
 	setUpSkeletonTexture(window);
 	setUpGoblinTexture(window);
 	setUpOrcTexture(window);
+	setUpNecromancerTexture(window);
 }
 
 float lastEnemyTime = 0;
@@ -27,7 +28,7 @@ void newWave()
 
  	wave++;
  	EnemiesCount = 0;
- 	EnemiesLimit = (wave * 5) + (wave * 2) + (wave / 3);
+ 	EnemiesLimit = (wave * 5) + (wave * 2) + (wave / 3) + ((wave / 4) * 2);
  	EnemiesReserve.clear();
  	for (int i = 1; i <= wave * 5; i++)
  		 EnemiesReserve.push_back(0);
@@ -35,6 +36,8 @@ void newWave()
  		 EnemiesReserve.push_back(1);
  	for (int i = 1; i <= wave / 3; i++)
  		 EnemiesReserve.push_back(2);
+	for (int i = 1; i <= (wave / 4) * 2; i++)
+		 EnemiesReserve.push_back(3);
 
  	unsigned seed = chrono::system_clock::now().time_since_epoch().count();
  	shuffle(EnemiesReserve.begin(), EnemiesReserve.end(), default_random_engine(seed));
@@ -106,6 +109,12 @@ void spawnEnemies(float currentFrameTime)
                 Enemies.push_back(new Orc(desX, desY));
      			break;
      		}
+
+     		case 3:
+     		{
+     			Enemies.push_back(new Necromancer(desX, desY));
+     			break;
+     		}
      	}
 
      	EnemiesCount++;
@@ -157,6 +166,9 @@ void checkDamageEnemies(Player& player)
 
  		if (Orc* enemy = dynamic_cast<Orc*>(e))
  			enemy->checkDamageEnemy(player);
+
+ 		if (Necromancer* enemy = dynamic_cast<Necromancer*>(e))
+ 			enemy->checkDamageEnemy(player);
  	}
  }
 
@@ -186,6 +198,9 @@ void updateEnemies(Player &player, vector<Entity> &Obstacles, float currentFrame
  			enemy->updateEnemy(player, Obstacles, currentFrameTime, damageBoxes);
 
  		if (Orc* enemy = dynamic_cast<Orc*>(e))
+ 			enemy->updateEnemy(player, Obstacles, currentFrameTime, damageBoxes, Enemies);
+
+ 		if (Necromancer* enemy = dynamic_cast<Necromancer*>(e))
  			enemy->updateEnemy(player, Obstacles, currentFrameTime, damageBoxes, Enemies);
 
  		if (isEnemy && (*e).getState() == 4 && (*e).getFrameDuration() == 0)
