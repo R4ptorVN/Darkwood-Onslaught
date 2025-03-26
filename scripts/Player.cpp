@@ -151,11 +151,11 @@ float Player::getAttackingDamage()
     return attackingDamage;
 }
 
-void Player::levelUp()
+void Player::levelUp(int wave)
 {
-     maxHP += 5;
+     maxHP = 100 + (5 * wave);
      healthPoints = maxHP;
-     attackingDamage += 3;
+     attackingDamage = 12 + (3 * wave);
 }
 
 SDL_Rect Player::getHealthBar()

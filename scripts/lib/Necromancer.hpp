@@ -19,6 +19,8 @@ class Necromancer : public Enemy
 
     protected:
         bool isAttacking;
+        int summoningCooldown;
+        int randomPortalValueX, randomPortalValueY;
 
 };
 

@@ -22,13 +22,14 @@ int EnemiesCount = 0;
 int wave = 0;
 
 vector<int> EnemiesReserve;
+
 void newWave()
 {
  	Enemies.clear();
 
  	wave++;
  	EnemiesCount = 0;
- 	EnemiesLimit = (wave * 5) + (wave * 2) + (wave / 3) + ((wave / 4) * 2);
+	EnemiesLimit = (wave * 5) + (wave * 2) + (wave / 3) + ((wave / 5) * 2);
  	EnemiesReserve.clear();
  	for (int i = 1; i <= wave * 5; i++)
  		 EnemiesReserve.push_back(0);
@@ -36,7 +37,7 @@ void newWave()
  		 EnemiesReserve.push_back(1);
  	for (int i = 1; i <= wave / 3; i++)
  		 EnemiesReserve.push_back(2);
-	for (int i = 1; i <= (wave / 4) * 2; i++)
+	for (int i = 1; i <= (wave / 5) * 2; i++)
 		 EnemiesReserve.push_back(3);
 
  	unsigned seed = chrono::system_clock::now().time_since_epoch().count();
@@ -177,7 +178,7 @@ void updateEnemies(Player &player, vector<Entity> &Obstacles, float currentFrame
  	if ((int)Enemies.size() == 0 && EnemiesCount == EnemiesLimit)
  	{
  		newWave();
- 		player.levelUp();
+ 		player.levelUp(wave);
  		return;
  	}
 

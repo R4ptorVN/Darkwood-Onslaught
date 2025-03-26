@@ -18,7 +18,7 @@ class Player: public Entity
         void setStateTexture(int x);
         int getAttackingState();
         float getAttackingDamage();
-        void levelUp();
+        void levelUp(int wave);
         SDL_Rect getHealthBar();
         SDL_Rect getManaBar();
         SDL_Rect getHitBox();

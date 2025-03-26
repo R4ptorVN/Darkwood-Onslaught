@@ -10,6 +10,7 @@ void setUpNecromancerTexture(RenderWindow& window)
 {
       necromancerTexture[0] = window.loadTexture("resources/Enemies/Necromancer/necromancerFloating.png");
       necromancerTexture[1] = window.loadTexture("resources/Enemies/Necromancer/necromancerAttacking.png");
+      necromancerTexture[2] = window.loadTexture("resources/Enemies/Necromancer/necromancerSummoningPortals.png");
       necromancerTexture[3] = window.loadTexture("resources/Enemies/Necromancer/necromancerDamaged.png");
       necromancerTexture[4] = window.loadTexture("resources/Enemies/Necromancer/necromancerDeath.png");
 }
@@ -17,18 +18,24 @@ void setUpNecromancerTexture(RenderWindow& window)
 Necromancer::Necromancer(float desX, float desY)
 :Enemy(64, 93, 16, 3, desX, desY, 16 * 1.25, 3 * 1.25, necromancerTexture[0])
 {
-      movementSpeed = 1.25;
+      movementSpeed = 1.25; 
 
       healthPoints = 120;
 
       isAttacking = false;
 
+      summoningCooldown = 0;
+
       targetX = targetY = 0;
-      randomValueX = (mt() % 15) - (mt() % 15);
-      randomValueY = (mt() % 15) - (mt() % 15);
+      randomValueX = (mt() % 10) - (mt() % 10);
+      randomValueY = (mt() % 10) - (mt() % 10);
+
+      randomPortalValueX = 0;
+      randomPortalValueY = 0;
 
       maxFrames[0] = 16;
       maxFrames[1] = 9;
+      maxFrames[2] = 11;
       maxFrames[3] = 1;
       maxFrames[4] = 1;
 
@@ -46,6 +53,13 @@ Necromancer::Necromancer(float desX, float desY)
       for (int i = 1; i < maxFrames[1]; i++)
             srcXFrames[1][i] = srcXFrames[1][i - 1] + 144;
 
+      srcXFrames[2][0] = 64;
+      srcYFrames[2] = 93;
+      srcWFrames[2] = 16;
+      srcHFrames[2] = 3;
+      for (int i = 1; i < maxFrames[2]; i++)
+            srcXFrames[2][i] = srcXFrames[2][i - 1] + 144;
+
       srcXFrames[3][0] = 64;
       srcYFrames[3] = 93;
       srcWFrames[3] = 16;
@@ -60,6 +74,7 @@ Necromancer::Necromancer(float desX, float desY)
 
       renderBox[0] = makeRec(-64, -93, 144, 128);
       renderBox[1] = makeRec(-64, -93, 144, 128);
+      renderBox[2] = makeRec(-64, -93, 144, 128);
       renderBox[3] = makeRec(-64, -93, 144, 128);
       renderBox[4] = makeRec(-32, -28, 96, 48);
 }
@@ -94,12 +109,12 @@ pair<int, int> Necromancer::getLaserPos()
       if (!facingLeft)
       {
             x = getDesX() + (35 * 1.25);
-            y = getDesY() - (6 * 1.25);
+            y = getDesY() - (8 * 1.25);
       }
       else
       {
             x = getDesX() - (500 * 1.25);
-            y = getDesY() - (6 * 1.25);
+            y = getDesY() - (8 * 1.25);
       }
 
       return make_pair(x, y);
@@ -155,9 +170,20 @@ void Necromancer::updateEnemy(Player &player, vector<Entity> &Obstacles, float c
             {
                   if (state != 3)
                         frameDuration = 5;
+
                   state = 3;
                   frame = 0;
                   updateFrame(srcXFrames[state][frame], srcYFrames[state], srcWFrames[state], srcHFrames[state]);
+            }
+            else if (actionCooldown == 0 && summoningCooldown == 0 && abs(targetX - getDesX()) <= 75 && abs(targetY - getDesY()) <= 75)
+            {
+                  actionCooldown = 100;
+                  summoningCooldown = 500;
+
+                  state = 2;
+                  frame = 0;
+                  updateFrame(srcXFrames[state][frame], srcYFrames[state], srcWFrames[state], srcHFrames[state]);
+                  frameDuration = maxFrames[state];
             }
             else if (actionCooldown == 0 && abs(targetY - getDesY()) <= 50 && abs(targetX - getDesX()) <= 250)
             {
@@ -175,6 +201,9 @@ void Necromancer::updateEnemy(Player &player, vector<Entity> &Obstacles, float c
                   updateFrame(srcXFrames[state][frame], srcYFrames[state], srcWFrames[state], srcHFrames[state]);
             }
       }
+
+      if (summoningCooldown > 0)
+            summoningCooldown--;
 
       if (actionCooldown > 0)
             actionCooldown--;
@@ -226,6 +255,33 @@ void Necromancer::updateEnemy(Player &player, vector<Entity> &Obstacles, float c
 
                         isAttacking = true;
                   }
+
+                  break;
+            }
+
+            case 2:
+            {
+                  if (frame == 4 && !isAttacking)
+                  {
+                        int x = (mt() % 10) - (mt() % 10);
+                        int y = (mt() % 10) - (mt() % 10);
+
+                        randomPortalValueX = player.getDesX() + x;
+                        randomPortalValueY = (player.getDesY() - 25) + y;
+
+                        Enemies.push_back(new Projectile(4, 48, 0, randomPortalValueX, randomPortalValueY));
+
+                        isAttacking = true;
+                  }
+
+                  if (frame == 9 && isAttacking)
+                  {
+                        Enemies.push_back(new Skeleton(randomPortalValueX + 10, randomPortalValueY + 70));
+
+                        isAttacking = false;
+                  }
+
+                  break;
             }
 
             case 3:
