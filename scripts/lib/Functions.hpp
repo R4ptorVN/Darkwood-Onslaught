@@ -17,6 +17,8 @@ extern mt19937 mt;
 
 bool checkCollision(SDL_Rect a, vector<Entity> &Obstacles);
 
+bool checkInside(int x, int y, SDL_Rect rec);
+
 SDL_Rect makeRec(int x, int y, int w, int h);
 
 

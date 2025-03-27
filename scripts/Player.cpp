@@ -242,7 +242,7 @@ bool Player::outOfMap()
     return false;
 }
 
-void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameTime, bool &gameRunning)
+void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameTime, bool &gameStarting)
 {
     const Uint8* keyState = SDL_GetKeyboardState(NULL);
 
@@ -257,8 +257,6 @@ void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameT
 
             frame = 0;
             updateFrame(srcXFrames[frame], srcYFrames[state][movingDirection]);
-            if (movingDirection == 2)
-                setFlip(SDL_FLIP_HORIZONTAL);
         }
         else if (keyState[SDL_SCANCODE_K] && manaPoints == 20)
         {
@@ -381,7 +379,7 @@ void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameT
             case 4:
             {
                  if (frameDuration == 0)
-                     gameRunning = false;
+                     gameStarting = false;
 
                 break;
             }

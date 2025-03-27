@@ -28,7 +28,7 @@ class Player: public Entity
         void moveCharacter();
         void updateFrame(float x, float y);
         bool outOfMap();
-        void updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameTime, bool &gameRunning);
+        void updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameTime, bool &gameStarting);
 
     protected:
         float movementSpeed;

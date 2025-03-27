@@ -18,6 +18,11 @@ int main(int argc, char* args [])
 
     RenderWindow window("GAME v1.0");
 
+    SDL_Texture* titleScreen = window.loadTexture("resources/Miscellaneous/TitleScreen.png");
+
+    SDL_Rect button;
+    button = makeRec(197, 253, 100, 45);
+
     SDL_Rect camera;
 
     Map map(window);
@@ -30,7 +35,11 @@ int main(int argc, char* args [])
 
     bool gameRunning = true;
 
-    newWave();
+    bool gameStarting = false;
+
+    bool buttonEffect = false;
+
+    newWave(0);
 
     SDL_Event event;
 
@@ -65,16 +74,77 @@ int main(int argc, char* args [])
                     break;
                 }
             }
+            else if (!gameStarting && event.type == SDL_MOUSEBUTTONDOWN)
+            {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                pair<int, int> mouse = window.getMousePosition(x, y);
+
+                if (checkInside(mouse.first, mouse.second, button))
+                {
+                    gameStarting = true;
+
+                    window.setFade();
+
+                    player.levelUp(1);
+                    player.setDesX(300); player.setDesY(500);
+
+                    newWave(0);
+                }
+            }
+            else if (!gameStarting && event.type == SDL_MOUSEMOTION)
+            {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                pair<int, int> mouse = window.getMousePosition(x, y);
+
+                if (checkInside(mouse.first, mouse.second, button))
+                    buttonEffect = true;
+                else
+                    buttonEffect = false;
+            }
         }
 
         if (pauseGame || !gameRunning)
             continue;
 
+        if (window.screenFade() == 1)
+        {
+            window.display();
+
+            window.delay(startTime);
+
+            continue;
+        }
+
         window.init();
+
+        if (!gameStarting)
+        {
+            camera.x = camera.y = 0;
+
+            Entity screen(0, 0, 480, 270, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, titleScreen);
+
+            window.renderTitle(screen, camera, buttonEffect);
+
+            window.screenFade();
+
+            window.display();
+
+            window.delay(startTime);
+
+            continue;
+        }
 
         float currentFrameTime = SDL_GetPerformanceCounter() / (float)SDL_GetPerformanceFrequency() * 1000.0f;
 
-        player.updatePlayerMovement(map.getHitBoxes(), currentFrameTime, gameRunning);
+        player.updatePlayerMovement(map.getHitBoxes(), currentFrameTime, gameStarting);
+
+        if (player.checkDeath() && gameStarting == false)
+        {
+            window.setFade();
+            buttonEffect = false;
+        }
 
          if (player.getAttackingState() > 0)
              checkDamageEnemies(player);
@@ -83,7 +153,7 @@ int main(int argc, char* args [])
 
         updateEnemies(player, map.getHitBoxes(), currentFrameTime);
 
-         checkContactPlayer(player);
+        checkContactPlayer(player);
 
         updateCamera(camera, player);
 
@@ -116,16 +186,11 @@ int main(int argc, char* args [])
         int wave = getWave();
         window.renderWave(wave);
 
+        window.screenFade();
+
         window.display();
 
-        Uint32 endTime = SDL_GetPerformanceCounter();
-
-        float elapsedTime = (endTime - startTime) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
-
-        if (16.666f < elapsedTime)
-            elapsedTime = 16.666f;
-
-        SDL_Delay(floor(16.666f - elapsedTime));
+        window.delay(startTime);
     }
 
     window.init();

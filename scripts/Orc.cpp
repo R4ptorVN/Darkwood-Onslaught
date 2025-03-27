@@ -158,7 +158,7 @@ void Orc::checkDamageEnemy(Player &player)
  			frame = 0;
  			updateFrame(srcXFrames[state][frame], srcYFrames[state], srcWFrames[state], srcHFrames[state]);
  		}
- 		else if (actionCooldown == 0 && abs(targetX - getDesX()) <= 90 && abs(targetY - getDesY()) <= 35)
+ 		else if (actionCooldown == 0 && abs(targetX - getDesX()) <= 100 && abs(targetY - getDesY()) <= 40)
  		{
  			actionCooldown = 350;
 

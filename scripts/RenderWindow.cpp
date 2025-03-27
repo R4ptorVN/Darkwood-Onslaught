@@ -13,6 +13,8 @@ RenderWindow::RenderWindow(const char* p_title)
     if (window == NULL)
         SDL_Log("Window failed to initialize");
 
+    fadeStatus = 0;
+
     Entities.clear();
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
@@ -68,7 +70,7 @@ void RenderWindow::setUpHUD()
 
 void RenderWindow::init()
 {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_RenderClear(renderer);
     SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 }
@@ -78,6 +80,37 @@ void RenderWindow::clear()
     SDL_RenderClear(renderer);
 }
 
+pair<int, int> RenderWindow::getMousePosition(int realMouseX, int realMouseY)
+{
+    int wWidth, wHeight;
+    int rLogicalWidth, rLogicalHeight;
+    int rRealWidth, rRealHeight;
+    float rScaleX, rScaleY;
+    int rMidpointY, wMidpointY;
+    int rMidpointX, wMidpointX;
+    int rY, rX;
+
+    SDL_GetWindowSize(window, &wWidth, &wHeight);
+    wMidpointY = wHeight / 2;
+    wMidpointX = wWidth / 2;
+
+    SDL_RenderGetLogicalSize(renderer, &rLogicalWidth, &rLogicalHeight);
+    SDL_RenderGetScale(renderer, &rScaleX, &rScaleY);
+    rRealWidth = (float)rLogicalWidth * (float)rScaleX;
+    rRealHeight = (float)rLogicalHeight * (float)rScaleY;
+    rMidpointY = rRealHeight / 2;
+    rMidpointX = rRealWidth / 2;
+    rY = wMidpointY - rMidpointY;
+    rX = wMidpointX - rMidpointX;
+
+    int adjustedMouseY = realMouseY - rY;
+    int adjustedMouseX = realMouseX - rX;
+    int logicalMouseX = (float)adjustedMouseX / (float)rRealWidth * (float)rLogicalWidth;
+    int logicalMouseY = (float) adjustedMouseY / (float)rRealHeight * (float)rLogicalHeight;
+
+    return make_pair(logicalMouseX, logicalMouseY);
+}
+
 void RenderWindow::render(Entity& p_entity, SDL_Rect &camera)
 {
     SDL_Rect src = p_entity.getSrcFrame();
@@ -85,6 +118,55 @@ void RenderWindow::render(Entity& p_entity, SDL_Rect &camera)
     dest.x -= camera.x;
     dest.y -= camera.y;
     SDL_RenderCopyEx(renderer, p_entity.getTex(), &src, &dest, 0, NULL, p_entity.getFlip());
+}
+
+void RenderWindow::renderTitle(Entity& p_entity, SDL_Rect &camera, bool buttonEffect)
+{
+    render(p_entity, camera);
+
+    SDL_Rect button;
+    button = makeRec(197, 253, 100, 45);
+
+    if (!buttonEffect)
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
+    else
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 70);
+
+    SDL_RenderFillRect(renderer, &button);
+}
+
+void RenderWindow::setFade()
+{
+    fadeStatus = 1;
+}
+
+int screenAlpha = 0;
+
+int RenderWindow::screenFade()
+{
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, screenAlpha);
+    SDL_RenderFillRect(renderer, NULL);
+    int fadeSpeed = 5;
+
+    if (fadeStatus == 1)
+    {
+        screenAlpha += fadeSpeed;
+        screenAlpha = min(screenAlpha, 255);
+
+        if (screenAlpha == 255)
+            fadeStatus = 2;
+    }
+
+    if (fadeStatus == 2)
+    {
+        screenAlpha -= fadeSpeed;
+        screenAlpha = max(screenAlpha, 0);
+
+        if (screenAlpha == 0)
+            fadeStatus = 0;
+    }
+
+    return fadeStatus;
 }
 
 void RenderWindow::clearEntities()
@@ -135,7 +217,7 @@ void RenderWindow::renderBars(SDL_Rect &healthBar, SDL_Rect &manaBar)
 {
     healthBar.x = 30; healthBar.y = SCREEN_HEIGHT - 60;
 
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 1);
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_RenderFillRect(renderer, &healthBar);
     SDL_RenderDrawRect(renderer, &healthBar);
 
@@ -151,7 +233,7 @@ void RenderWindow::renderBars(SDL_Rect &healthBar, SDL_Rect &manaBar)
 
     manaBar.x = 30; manaBar.y = SCREEN_HEIGHT - 30;
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 1);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
     SDL_RenderFillRect(renderer, &manaBar);
     SDL_RenderDrawRect(renderer, &manaBar);
 
@@ -181,7 +263,19 @@ void RenderWindow::renderWave(int wave)
 
 void RenderWindow::display()
 {
-     SDL_RenderPresent(renderer);
+    SDL_RenderPresent(renderer);
+}
+
+void RenderWindow::delay(float startTime)
+{
+    Uint32 endTime = SDL_GetPerformanceCounter();
+
+    float elapsedTime = (endTime - startTime) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
+
+    if (16.666f < elapsedTime)
+        elapsedTime = 16.666f;
+
+    SDL_Delay(floor(16.666f - elapsedTime));
 }
 
 void RenderWindow::cleanUp()

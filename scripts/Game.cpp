@@ -23,11 +23,13 @@ int wave = 0;
 
 vector<int> EnemiesReserve;
 
-void newWave()
+void newWave(int curWave)
 {
  	Enemies.clear();
 
- 	wave++;
+ 	wave = curWave;
+	wave++;
+
  	EnemiesCount = 0;
 	EnemiesLimit = (wave * 5) + (wave * 2) + (wave / 3) + ((wave / 5) * 2);
  	EnemiesReserve.clear();
@@ -177,7 +179,7 @@ void updateEnemies(Player &player, vector<Entity> &Obstacles, float currentFrame
  {
  	if ((int)Enemies.size() == 0 && EnemiesCount == EnemiesLimit)
  	{
- 		newWave();
+ 		newWave(wave);
  		player.levelUp(wave);
  		return;
  	}

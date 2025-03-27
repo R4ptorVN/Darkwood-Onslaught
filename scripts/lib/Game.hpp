@@ -12,7 +12,7 @@ using namespace std;
 
 void setupEnemyTexture(RenderWindow& window);
 
-void newWave();
+void newWave(int curWave);
 
 int getWave();
 

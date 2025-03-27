@@ -86,9 +86,9 @@ SDL_Rect Skeleton::getBodyBox()
  	SDL_Rect BodyBox = getDestFrame();
 
  	BodyBox.x -= (4 * 1.25);
- 	BodyBox.y -= (35 * 1.25);
+ 	BodyBox.y -= (25 * 1.25);
  	BodyBox.w = (15 * 1.25);
- 	BodyBox.h = (19 * 1.25);
+ 	BodyBox.h = (8 * 1.25);
 
  	return BodyBox;
  }
