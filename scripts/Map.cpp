@@ -114,9 +114,9 @@ Map::Map(RenderWindow &window)
         lastFrameTime = 0;
 }
 
-Entity& Map::getFire(float currentFrameTime)
+Entity& Map::getFire(float currentFrameTime, bool gameEnding)
 {
-        if (currentFrameTime - lastFrameTime > 100)
+        if (!gameEnding && currentFrameTime - lastFrameTime > 100)
         {
                 fireFrame++;
                 if (fireFrame == 8)

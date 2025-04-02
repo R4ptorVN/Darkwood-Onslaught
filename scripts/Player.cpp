@@ -153,6 +153,9 @@ float Player::getAttackingDamage()
 
 void Player::levelUp(int wave)
 {
+     if (wave == 1)
+         manaPoints = 0;
+
      maxHP = 100 + (5 * wave);
      healthPoints = maxHP;
      attackingDamage = 12 + (3 * wave);
@@ -242,7 +245,7 @@ bool Player::outOfMap()
     return false;
 }
 
-void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameTime, bool &gameStarting)
+void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameTime, bool &gameEnding)
 {
     const Uint8* keyState = SDL_GetKeyboardState(NULL);
 
@@ -379,7 +382,7 @@ void Player::updatePlayerMovement(vector<Entity> &Obstacles, float currentFrameT
             case 4:
             {
                  if (frameDuration == 0)
-                     gameStarting = false;
+                     gameEnding = true;
 
                 break;
             }

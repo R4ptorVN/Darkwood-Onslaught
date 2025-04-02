@@ -20,8 +20,6 @@ int main(int argc, char* args [])
 
     SDL_Texture* titleScreen = window.loadTexture("resources/Miscellaneous/TitleScreen.png");
 
-    SDL_Rect button;
-    button = makeRec(197, 253, 100, 45);
 
     SDL_Rect camera;
 
@@ -37,7 +35,10 @@ int main(int argc, char* args [])
 
     bool gameStarting = false;
 
-    bool buttonEffect = false;
+    bool gameEnding = false;
+
+    Button playButton(197, 253, 100, 45);
+    Button retryButton(185, 270, 142, 35);
 
     newWave(0);
 
@@ -80,11 +81,11 @@ int main(int argc, char* args [])
                 SDL_GetMouseState(&x, &y);
                 pair<int, int> mouse = window.getMousePosition(x, y);
 
-                if (checkInside(mouse.first, mouse.second, button))
+                if (checkInside(mouse.first, mouse.second, playButton.getButtonRec()))
                 {
                     gameStarting = true;
 
-                    window.setFade();
+                    window.setFade(1);
 
                     player.levelUp(1);
                     player.setDesX(300); player.setDesY(500);
@@ -98,10 +99,41 @@ int main(int argc, char* args [])
                 SDL_GetMouseState(&x, &y);
                 pair<int, int> mouse = window.getMousePosition(x, y);
 
-                if (checkInside(mouse.first, mouse.second, button))
-                    buttonEffect = true;
+                if (checkInside(mouse.first, mouse.second, playButton.getButtonRec()))
+                    playButton.setButtonState(1);
                 else
-                    buttonEffect = false;
+                    playButton.setButtonState(0);
+            }
+
+            else if (gameEnding && event.type == SDL_MOUSEBUTTONDOWN)
+            {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                pair<int, int> mouse = window.getMousePosition(x, y);
+
+                if (checkInside(mouse.first, mouse.second, retryButton.getButtonRec()))
+                {
+                    gameEnding = false;
+
+                    window.setFade(1);
+
+                    player.levelUp(1);
+                    player.setDesX(300); player.setDesY(500);
+
+                    newWave(0);
+                }
+            }
+
+            else if (gameEnding && event.type == SDL_MOUSEMOTION)
+            {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                pair<int, int> mouse = window.getMousePosition(x, y);
+
+                if (checkInside(mouse.first, mouse.second, retryButton.getButtonRec()))
+                    retryButton.setButtonState(1);
+                else
+                    retryButton.setButtonState(0);
             }
         }
 
@@ -125,7 +157,7 @@ int main(int argc, char* args [])
 
             Entity screen(0, 0, 480, 270, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, titleScreen);
 
-            window.renderTitle(screen, camera, buttonEffect);
+            window.renderTitle(screen, camera, playButton.getButtonState());
 
             window.screenFade();
 
@@ -138,20 +170,19 @@ int main(int argc, char* args [])
 
         float currentFrameTime = SDL_GetPerformanceCounter() / (float)SDL_GetPerformanceFrequency() * 1000.0f;
 
-        player.updatePlayerMovement(map.getHitBoxes(), currentFrameTime, gameStarting);
+        if (!gameEnding)
+            player.updatePlayerMovement(map.getHitBoxes(), currentFrameTime, gameEnding);
 
-        if (player.checkDeath() && gameStarting == false)
-        {
-            window.setFade();
-            buttonEffect = false;
-        }
+        if (gameEnding == true)
+            window.setFade(3);
 
-         if (player.getAttackingState() > 0)
-             checkDamageEnemies(player);
+        if (player.getAttackingState() > 0)
+            checkDamageEnemies(player);
 
         spawnEnemies(currentFrameTime);
 
-        updateEnemies(player, map.getHitBoxes(), currentFrameTime);
+        if (!gameEnding)
+            updateEnemies(player, map.getHitBoxes(), currentFrameTime);
 
         checkContactPlayer(player);
 
@@ -168,7 +199,7 @@ int main(int argc, char* args [])
         for (int i = 0; i < int(obstacleDisplay.size()); i++)
              window.pushEntities(obstaclesHitBox[i], obstacleDisplay[i], 2);
 
-        window.pushEntities(map.getFire(currentFrameTime), makeRec(0, 0, 16, 29), 2);
+        window.pushEntities(map.getFire(currentFrameTime, gameEnding), makeRec(0, 0, 16, 29), 2);
 
         window.pushEntities(player, player.getRenderBoxValues(), 1.75);
 
@@ -186,7 +217,9 @@ int main(int argc, char* args [])
         int wave = getWave();
         window.renderWave(wave);
 
-        window.screenFade();
+
+        if (window.screenFade() == 3)
+            window.renderEnding(wave, camera, retryButton.getButtonState());
 
         window.display();
 

@@ -13,6 +13,22 @@ const int LEVEL_HEIGHT = 384 * 2;
 const int SCREEN_WIDTH = 512;
 const int SCREEN_HEIGHT = 384;
 
+class Button
+{
+    public:
+        Button(int x, int y, int w, int h);
+        SDL_Rect getButtonRec();
+        void setButtonState(int x);
+        bool getButtonState();
+
+    protected:
+        SDL_Rect buttonRec;
+        bool buttonState;
+};
+
+
+void setUpButtons(SDL_Rect &playButton, SDL_Rect &retryButton);
+
 extern mt19937 mt;
 
 bool checkCollision(SDL_Rect a, vector<Entity> &Obstacles);

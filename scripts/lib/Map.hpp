@@ -17,7 +17,7 @@ class Map
         void renderLayer(RenderWindow &window, SDL_Rect &camera, int Layer);
         vector<Entity>& getHitBoxes();
         vector<SDL_Rect>& getDisplayBoxesValues();
-        Entity& getFire(float currentFrameTime);
+        Entity& getFire(float currentFrameTime, bool gameEnding);
 
     protected:
         Entity mapLayer[4];

@@ -21,7 +21,8 @@ class RenderWindow
         pair<int, int> getMousePosition(int realMouseX, int realMouseY);
         void render(Entity& p_entity, SDL_Rect &camera);
         void renderTitle(Entity& p_entity, SDL_Rect &camera, bool buttonEffect);
-        void setFade();
+        void renderEnding(int wave, SDL_Rect &camera, bool buttonEffect);
+        void setFade(int x);
         int screenFade();
         void clearEntities();
         void pushEntities(Entity& HitBox, SDL_Rect Values, float multiplier);

@@ -2,6 +2,27 @@
 
 using namespace std;
 
+Button::Button(int x, int y, int w, int h)
+{
+    buttonRec = makeRec(x, y, w, h);
+    buttonState = false;
+}
+
+SDL_Rect Button::getButtonRec()
+{
+    return buttonRec;
+}
+
+void Button::setButtonState(int x)
+{
+    buttonState = x;
+}
+
+bool Button::getButtonState()
+{
+    return buttonState;
+}
+
 mt19937 mt(chrono::steady_clock::now().time_since_epoch().count());
 
 bool checkCollision(SDL_Rect a, vector<Entity> &Obstacles)

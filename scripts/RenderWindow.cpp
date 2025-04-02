@@ -135,12 +135,68 @@ void RenderWindow::renderTitle(Entity& p_entity, SDL_Rect &camera, bool buttonEf
     SDL_RenderFillRect(renderer, &button);
 }
 
-void RenderWindow::setFade()
+void RenderWindow::renderEnding(int wave, SDL_Rect &camera, bool buttonEffect)
 {
-    fadeStatus = 1;
+    SDL_Color textColor = {255, 255, 255};
+    SDL_Texture* Text = loadText("resources/Font/PublicPixel.ttf", "GAME OVER", 30, textColor);
+
+    SDL_Rect* src = NULL;
+    SDL_Rect dest = makeRec(125, 75, tmpW, tmpH);
+
+    SDL_RenderCopy(renderer, Text, src, &dest);
+
+    ifstream input("highscore.txt");
+    int highScore;
+    input >> highScore;
+
+    if (wave > highScore)
+        highScore = wave;
+
+    string strWord = "YOUR SCORE:" + to_string(wave);
+    const char *yourScore = strWord.c_str();
+    Text = loadText("resources/Font/PublicPixel.ttf", yourScore, 18, textColor);
+
+    dest = makeRec(125, 145, tmpW, tmpH);
+
+    SDL_RenderCopy(renderer, Text, src, &dest);
+
+    strWord = "HIGH SCORE:" + to_string(highScore);
+    const char *highScoreStr = strWord.c_str();
+    Text = loadText("resources/Font/PublicPixel.ttf", highScoreStr, 18, textColor);
+
+    dest = makeRec(125, 205, tmpW, tmpH);
+
+    SDL_RenderCopy(renderer, Text, src, &dest);
+
+    ofstream output("highscore.txt");
+    output << highScore;
+
+    input.close();
+    output.close();
+
+    Text = loadText("resources/Font/PublicPixel.ttf", "RETRY", 23, textColor);
+
+    dest = makeRec(200, 275, tmpW, tmpH);
+
+    SDL_RenderCopy(renderer, Text, src, &dest);
+
+    SDL_Rect button;
+    button = makeRec(185, 270, 142, 35);
+
+    if (!buttonEffect)
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
+    else
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 70);
+
+    SDL_RenderFillRect(renderer, &button);
 }
 
-int screenAlpha = 0;
+void RenderWindow::setFade(int x)
+{
+    fadeStatus = x;
+}
+
+float screenAlpha = 0;
 
 int RenderWindow::screenFade()
 {
@@ -151,7 +207,8 @@ int RenderWindow::screenFade()
     if (fadeStatus == 1)
     {
         screenAlpha += fadeSpeed;
-        screenAlpha = min(screenAlpha, 255);
+        if (screenAlpha > 255)
+            screenAlpha = 255;
 
         if (screenAlpha == 255)
             fadeStatus = 2;
@@ -160,10 +217,18 @@ int RenderWindow::screenFade()
     if (fadeStatus == 2)
     {
         screenAlpha -= fadeSpeed;
-        screenAlpha = max(screenAlpha, 0);
+        if (screenAlpha < 0)
+            screenAlpha = 0;
 
         if (screenAlpha == 0)
             fadeStatus = 0;
+    }
+
+    if (fadeStatus == 3)
+    {
+        screenAlpha += 1;
+        if (screenAlpha > 100)
+            screenAlpha = 100;
     }
 
     return fadeStatus;
